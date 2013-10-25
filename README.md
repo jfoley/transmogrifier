@@ -1,29 +1,28 @@
 # Transmogrifier
 
-TODO: Write a gem description
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'transmogrifier'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install transmogrifier
+Transmogrifier is a tool that allows you to migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
 
 ## Usage
+Example usage:
+```
+old_hash = {"key" => "value", "extra_key" => nil }
 
-TODO: Write usage instructions here
+transmogrifier = Transmogrifier::Transmogrifier.new
+transmogrifier.add_rule(Transmogrifier::Rules::DeleteKey.new("extra_key"))
+new_hash = transmogrifier.transmogrify!(old_hash)
 
-## Contributing
+# new hash => {"key" => "value"}
+```
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+Transmogrifier supports several rules.
+
+1. RenameKey
+2. AddKey
+3. DeleteKey
+4. TransformValue
+
+It is also intended to be easy to add your own rules by subclassing Rules::Base.
+
+### Next steps
+1. code organization
+2. nesting
