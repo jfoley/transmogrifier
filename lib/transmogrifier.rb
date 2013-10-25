@@ -1,4 +1,5 @@
 require "transmogrifier/version"
+require "transmogrifier/key_path"
 
 module Transmogrifier
   class Transmogrifier
@@ -33,9 +34,9 @@ module Transmogrifier
     end
 
     class RenameKey < Base
-      def initialize(from, to)
-        @from = from
-        @to = to
+      def initialize(from_selector, to_selector)
+        @from = from_selector
+        @to = to_selector
       end
 
       def apply!(hash)

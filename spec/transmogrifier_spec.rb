@@ -4,18 +4,36 @@ describe Transmogrifier::Transmogrifier do
   subject(:transmogrifier) { described_class.new }
 
   describe "renaming a key" do
-    let(:input_hash) {{
-      "key" => "value",
-    }}
+    context "when the key is top level" do
+      let(:input_hash) {{
+        "key" => "value",
+      }}
 
-    let(:output_hash) {{
-      "new_key" => "value",
-    }}
+      let(:output_hash) {{
+        "new_key" => "value",
+      }}
 
-    it "renames a key" do
-      transmogrifier.add_rule(Transmogrifier::Rules::RenameKey.new("key", "new_key"))
+      it "renames a key" do
+        transmogrifier.add_rule(Transmogrifier::Rules::RenameKey.new(".key", "new_key"))
 
-      expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
+        expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
+      end
+    end
+
+    context "when the key is nested" do
+      let(:input_hash) {{
+        "key" => { "nested" => "value"},
+      }}
+
+      let(:output_hash) {{
+        "key" => { "new_key" => "value" },
+      }}
+
+      it "renames a key" do
+        transmogrifier.add_rule(Transmogrifier::Rules::RenameKey.new(".key.nested", "new_key"))
+
+        expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
+      end
     end
   end
 
@@ -99,5 +117,9 @@ describe Transmogrifier::Transmogrifier do
 
       expect(transmogrifier.transmogrify({})).to eq(output_hash)
     end
+  end
+
+  describe "nested rules" do
+
   end
 end
