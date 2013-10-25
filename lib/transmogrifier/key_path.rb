@@ -29,33 +29,43 @@ module Transmogrifier
 
       keys = path.split(".")
 
-      root_match_only = false
-      if keys[0].empty?
-        root_match_only = true
-        keys.shift
-      end
+      idx = 0
+      root_matching = keys[0] == ""
 
-      find_sub_hashes(nil, @hash, keys, matches, root_match_only)
+      traverse(@hash, nil) do |key, value, parent, slice|
+        if root_matching
+          idx += 1
+          if keys[idx] == key && idx == keys.length - 1
+            matches << Match.new(parent, slice, key)
+          end
+        else
+          if keys[idx] == key
+            idx += 1
+          end
+
+          if keys.length == idx
+            matches << Match.new(parent, slice, key)
+            idx = 0
+          end
+        end
+
+      end
 
       matches
     end
 
-    def find_sub_hashes(parent, hash, keys, matches, root_match_only)
-      hash.each do |key, value|
-        if key == keys[0]
-          # possible match, keep going
-          if keys.length == 1
-            # its a match
-            matches << Match.new(parent, hash, key)
-          else
-            keys.shift
-            find_sub_hashes(hash, value, keys, matches, root_match_only) if value.is_a?(Hash)
+    def traverse(obj, parent, &blk)
+      case obj
+        when Hash
+          obj.each do |k, v|
+            blk.call(k, v, parent, obj)
+            # Pass hash key as parent
+            traverse(v, k, &blk)
           end
+        when Array
+          obj.each {|v| traverse(v, parent, &blk) }
         else
-          next if root_match_only
-          # go deeper
-          find_sub_hashes(hash, value, keys, matches, root_match_only) if value.is_a?(Hash)
-        end
+          blk.call(nil, nil, parent, obj)
       end
     end
 
@@ -67,3 +77,4 @@ module Transmogrifier
     end
   end
 end
+
