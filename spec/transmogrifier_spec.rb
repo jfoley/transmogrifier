@@ -14,7 +14,7 @@ describe Transmogrifier::Transmogrifier do
       }}
 
       it "renames a key" do
-        transmogrifier.add_rule(Transmogrifier::Rules::RenameKey.new(".key", "new_key"))
+        transmogrifier.add_rule(".", Transmogrifier::Rules::RenameKey.new("key", "new_key"))
 
         expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
       end
@@ -30,7 +30,27 @@ describe Transmogrifier::Transmogrifier do
       }}
 
       it "renames a key" do
-        transmogrifier.add_rule(Transmogrifier::Rules::RenameKey.new(".key.nested", "new_key"))
+        transmogrifier.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
+
+        expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
+      end
+    end
+
+    context "when the path has multiple matches" do
+      let(:input_hash) {{
+        "top_key" => { "nested" => "value"},
+        "another" => { "nested" => "another"},
+        "unrelated" => { "unchanged" => "the_same" },
+      }}
+
+      let(:output_hash) {{
+        "top_key" => { "new_key" => "value"},
+        "another" => { "new_key" => "another"},
+        "unrelated" => { "unchanged" => "the_same" },
+      }}
+
+      it "renames a key" do
+        transmogrifier.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
 
         expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
       end
@@ -48,7 +68,8 @@ describe Transmogrifier::Transmogrifier do
     }}
 
     it "adds a key with the value set to nil" do
-      transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("new_key"))
+
+      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key"))
 
       expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
     end
@@ -60,7 +81,7 @@ describe Transmogrifier::Transmogrifier do
       }}
 
       it "adds the key with the value set to default" do
-        transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("new_key", "default"))
+        transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key", "default"))
 
         expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
       end
@@ -78,7 +99,7 @@ describe Transmogrifier::Transmogrifier do
     }}
 
     it "removes the key" do
-      transmogrifier.add_rule(Transmogrifier::Rules::DeleteKey.new("extra_key"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
 
       expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
     end
@@ -94,7 +115,7 @@ describe Transmogrifier::Transmogrifier do
     }}
 
     it "transforms the value" do
-      transmogrifier.add_rule(Transmogrifier::Rules::TransformValue.new("key", "banana", "monkey"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::TransformValue.new("key", "banana", "monkey"))
 
       expect(transmogrifier.transmogrify(input_hash)).to eq(output_hash)
     end
@@ -108,12 +129,12 @@ describe Transmogrifier::Transmogrifier do
     }}
 
     it "applies rules in order" do
-      transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("extra_key"))
-      transmogrifier.add_rule(Transmogrifier::Rules::DeleteKey.new("extra_key"))
-      transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("key"))
-      transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("other_key", "default"))
-      transmogrifier.add_rule(Transmogrifier::Rules::AddKey.new("transformed_key", "default"))
-      transmogrifier.add_rule(Transmogrifier::Rules::TransformValue.new("transformed_key", "default", "default-transformed"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("extra_key"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("key"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("other_key", "default"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("transformed_key", "default"))
+      transmogrifier.add_rule(".", Transmogrifier::Rules::TransformValue.new("transformed_key", "default", "default-transformed"))
 
       expect(transmogrifier.transmogrify({})).to eq(output_hash)
     end

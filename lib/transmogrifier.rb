@@ -4,18 +4,25 @@ require "transmogrifier/key_path"
 module Transmogrifier
   class Transmogrifier
     def initialize
-      @rules = []
+      @selectors = {}
     end
 
-    def add_rule(rule)
-      @rules << rule
+    def add_rule(selector, rule)
+      if @selectors.has_key?(selector)
+        @selectors[selector] << rule
+      else
+        @selectors[selector] = [rule]
+      end
     end
 
     def transmogrify(input_hash)
       transformed_hash = input_hash.dup
 
-      @rules.each do |rule|
-        rule.apply!(transformed_hash)
+      @selectors.each do |selector, rules|
+        rules.each do |rule|
+          key_path = KeyPath.new(transformed_hash)
+          key_path.modify(selector, &->(sub_hash){ rule.apply!(sub_hash) } )
+        end
       end
 
       transformed_hash
@@ -24,7 +31,7 @@ module Transmogrifier
 
   module Rules
     class Base
-      def initialize
+      def initialize(selector)
         raise RuntimeError
       end
 
@@ -34,9 +41,9 @@ module Transmogrifier
     end
 
     class RenameKey < Base
-      def initialize(from_selector, to_selector)
-        @from = from_selector
-        @to = to_selector
+      def initialize(from, to)
+        @from = from
+        @to = to
       end
 
       def apply!(hash)
