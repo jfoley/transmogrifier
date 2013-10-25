@@ -12,12 +12,8 @@ module Transmogrifier
 
     def modify(path, &blk)
       matches = find_matches(path)
-      match = matches[0]
-      parent, child, key = match.parent, match.child, match.key
-      if parent.nil?
-        blk.call(child)
-      else
-        parent[key] = blk.call(child)
+      matches.each do |match|
+        blk.call(match.child)
       end
     end
 
