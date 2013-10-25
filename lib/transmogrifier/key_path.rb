@@ -7,13 +7,13 @@ module Transmogrifier
     def find(path)
       matches = find_matches(path)
 
-      matches.map(&:child)
+      matches.map(&:slice)
     end
 
     def modify(path, &blk)
       matches = find_matches(path)
       matches.each do |match|
-        blk.call(match.child)
+        blk.call(match.slice)
       end
     end
 
@@ -23,7 +23,7 @@ module Transmogrifier
       matches = []
 
       if path == "."
-        matches << Match.new(nil, @hash, nil)
+        matches << Match.new(nil, nil, nil, @hash)
         return matches
       end
 
@@ -36,7 +36,7 @@ module Transmogrifier
         if root_matching
           idx += 1
           if keys[idx] == key && idx == keys.length - 1
-            matches << Match.new(parent, slice, key)
+            matches << Match.new(parent, key, value, slice)
           end
         else
           if keys[idx] == key
@@ -44,7 +44,7 @@ module Transmogrifier
           end
 
           if keys.length == idx
-            matches << Match.new(parent, slice, key)
+            matches << Match.new(parent, key, value, slice)
             idx = 0
           end
         end
@@ -70,9 +70,9 @@ module Transmogrifier
     end
 
     class Match
-      attr_accessor :parent, :child, :key
-      def initialize(parent, child, key)
-        @parent, @child, @key = parent, child, key
+      attr_accessor :parent, :key, :value, :slice
+      def initialize(parent, key, value, slice)
+        @parent, @key, @value, @slice = parent, key, value, slice
       end
     end
   end
