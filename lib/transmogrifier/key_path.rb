@@ -20,14 +20,21 @@ module Transmogrifier
     private
 
     def find_matches(path)
-      keys = path.split(".")
       matches = []
 
+      if path == "."
+        matches << Match.new(nil, @hash, nil)
+        return matches
+      end
+
+      keys = path.split(".")
+
       root_match_only = false
-      if keys[0] == ""
+      if keys[0].empty?
         root_match_only = true
         keys.shift
       end
+
       find_sub_hashes(nil, @hash, keys, matches, root_match_only)
 
       matches
@@ -37,7 +44,7 @@ module Transmogrifier
       hash.each do |key, value|
         if key == keys[0]
           # possible match, keep going
-          if ( keys.length == 1 )
+          if keys.length == 1
             # its a match
             matches << Match.new(parent, hash, key)
           else

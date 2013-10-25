@@ -2,6 +2,12 @@ require "transmogrifier"
 
 describe Transmogrifier::KeyPath do
   describe "#find" do
+    it "returns the hash if the path is just a dot" do
+      input_hash = {"top_level" => "value" }
+
+      expect(Transmogrifier::KeyPath.new(input_hash).find(".")).to eq([{"top_level" => "value"}])
+    end
+
     it "takes a path of hash keys with dots between" do
       input_hash = {"top_level" => { "nested" => "value" }}
 
@@ -56,7 +62,7 @@ describe Transmogrifier::KeyPath do
     context "when the key is nested" do
       it "finds a hash and then calls the block on it" do
         input_hash = {"top_level" => { "nested" => "value" }}
-        blk = ->(hash){ p hash; hash["nested"] = "new_value"; hash }
+        blk = ->(hash){ hash["nested"] = "new_value"; hash }
 
         Transmogrifier::KeyPath.new(input_hash).modify(".top_level.nested", &blk)
         expect(input_hash).to eq({"top_level" => { "nested" => "new_value" }})
