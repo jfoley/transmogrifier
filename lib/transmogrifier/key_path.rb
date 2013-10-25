@@ -30,6 +30,8 @@ module Transmogrifier
       keys = path.split(".")
 
       idx = 0
+
+      # Root matching is a special case where we deal with a path that starts with a "."
       root_matching = keys[0] == ""
 
       traverse(@hash, nil) do |key, value, parent, slice|
