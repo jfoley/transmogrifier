@@ -97,12 +97,12 @@ module Transmogrifier
         build_hash(input_hash[key], keys)
       end
     end
+  end
 
-    class Match
-      attr_accessor :parent, :key, :value, :slice
-      def initialize(parent, key, value, slice)
-        @parent, @key, @value, @slice = parent, key, value, slice
-      end
+  class Match
+    attr_accessor :parent, :key, :value, :slice
+    def initialize(parent, key, value, slice)
+      @parent, @key, @value, @slice = parent, key, value, slice
     end
   end
 end
