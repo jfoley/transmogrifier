@@ -104,6 +104,14 @@ module Transmogrifier
     def initialize(parent, key, value, slice)
       @parent, @key, @value, @slice = parent, key, value, slice
     end
+
+    def ==(rhs)
+      parent == rhs.parent &&
+      key == rhs.key &&
+      value == rhs.value &&
+      slice == rhs.slice
+    end
+    alias :eql? :==
   end
 end
 
