@@ -65,4 +65,13 @@ describe Transmogrifier::Engine do
   describe "nested rules" do
 
   end
+
+  describe "turning a key in to an array" do
+    it "wraps the value in an array" do
+      input_hash = { "key" => "value" }
+      engine.add_rule(".", Transmogrifier::Rules::SingleToArray.new("key"))
+
+      expect(engine.run(input_hash)).to eq({"key" => ["value"]})
+    end
+  end
 end
