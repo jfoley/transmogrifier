@@ -1,7 +1,7 @@
 require "transmogrifier"
 
 describe Transmogrifier::Engine do
-  subject(:transmogrifier) { described_class.new }
+  subject(:engine) { described_class.new }
 
   describe "renaming a key" do
     context "when the key is top level" do
@@ -14,9 +14,9 @@ describe Transmogrifier::Engine do
       }}
 
       it "renames a key" do
-        transmogrifier.add_rule(".", Transmogrifier::Rules::RenameKey.new("key", "new_key"))
+        engine.add_rule(".", Transmogrifier::Rules::RenameKey.new("key", "new_key"))
 
-        expect(transmogrifier.run(input_hash)).to eq(output_hash)
+        expect(engine.run(input_hash)).to eq(output_hash)
       end
     end
 
@@ -30,9 +30,9 @@ describe Transmogrifier::Engine do
       }}
 
       it "renames a key" do
-        transmogrifier.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
+        engine.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
 
-        expect(transmogrifier.run(input_hash)).to eq(output_hash)
+        expect(engine.run(input_hash)).to eq(output_hash)
       end
     end
 
@@ -50,9 +50,9 @@ describe Transmogrifier::Engine do
       }}
 
       it "renames a key" do
-        transmogrifier.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
+        engine.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
 
-        expect(transmogrifier.run(input_hash)).to eq(output_hash)
+        expect(engine.run(input_hash)).to eq(output_hash)
       end
     end
   end
@@ -68,9 +68,9 @@ describe Transmogrifier::Engine do
     }}
 
     it "adds a key with the value set to nil" do
-      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key", nil))
+      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key", nil))
 
-      expect(transmogrifier.run(input_hash)).to eq(output_hash)
+      expect(engine.run(input_hash)).to eq(output_hash)
     end
 
     describe "when a default value is specified" do
@@ -80,9 +80,9 @@ describe Transmogrifier::Engine do
       }}
 
       it "adds the key with the value set to default" do
-        transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key", "new_value"))
+        engine.add_rule(".", Transmogrifier::Rules::AddKey.new("new_key", "new_value"))
 
-        expect(transmogrifier.run(input_hash)).to eq(output_hash)
+        expect(engine.run(input_hash)).to eq(output_hash)
       end
     end
 
@@ -96,9 +96,9 @@ describe Transmogrifier::Engine do
           }
         }
 
-        transmogrifier.add_rule(".top.next.third", Transmogrifier::Rules::AddKey.new("deeply_nested", nil))
+        engine.add_rule(".top.next.third", Transmogrifier::Rules::AddKey.new("deeply_nested", nil))
 
-        expect(transmogrifier.run({})).to eq(output_hash)
+        expect(engine.run({})).to eq(output_hash)
       end
     end
 
@@ -108,19 +108,17 @@ describe Transmogrifier::Engine do
   end
 
   describe "deleting a key" do
-    let(:input_hash) {{
-      "key" => "value",
-      "extra_key" => "value",
-    }}
+    let(:input_hash) {}
 
-    let(:output_hash) {{
-      "key" => "value",
-    }}
+    let(:output_hash) {}
 
     it "removes the key" do
-      transmogrifier.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
-
-      expect(transmogrifier.run(input_hash)).to eq(output_hash)
+      input_hash = {
+        "key" => "value",
+        "extra_key" => "value",
+      }
+      engine.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
+      expect(engine.run(input_hash)).to eq({ "key" => "value" })
     end
   end
 
@@ -134,9 +132,9 @@ describe Transmogrifier::Engine do
     }}
 
     it "transforms the value" do
-      transmogrifier.add_rule(".", Transmogrifier::Rules::UpdateValue.new("key", "banana", "monkey"))
+      engine.add_rule(".", Transmogrifier::Rules::UpdateValue.new("key", "banana", "monkey"))
 
-      expect(transmogrifier.run(input_hash)).to eq(output_hash)
+      expect(engine.run(input_hash)).to eq(output_hash)
     end
   end
 
@@ -148,14 +146,14 @@ describe Transmogrifier::Engine do
     }}
 
     it "applies rules in order" do
-      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("extra_key", nil))
-      transmogrifier.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
-      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("key", nil))
-      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("other_key", "default"))
-      transmogrifier.add_rule(".", Transmogrifier::Rules::AddKey.new("transformed_key", "default"))
-      transmogrifier.add_rule(".", Transmogrifier::Rules::UpdateValue.new("transformed_key", "default", "default-transformed"))
+      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("extra_key", nil))
+      engine.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
+      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("key", nil))
+      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("other_key", "default"))
+      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("transformed_key", "default"))
+      engine.add_rule(".", Transmogrifier::Rules::UpdateValue.new("transformed_key", "default", "default-transformed"))
 
-      expect(transmogrifier.run({})).to eq(output_hash)
+      expect(engine.run({})).to eq(output_hash)
     end
   end
 

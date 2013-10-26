@@ -17,10 +17,11 @@ module Transmogrifier
 
       @selectors.each do |selector, rules|
         rules.each do |rule|
-          rule.setup(selector, output_hash)
-
           key_path = KeyPath.new(output_hash)
-          key_path.modify(selector, &->(sub_hash){ rule.apply!(sub_hash) } )
+
+          output_hash = rule.setup(selector, key_path)
+
+          key_path.modify(selector, &->(match){ rule.apply!(match) } )
         end
       end
 

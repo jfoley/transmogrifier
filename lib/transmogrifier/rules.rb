@@ -5,7 +5,8 @@ module Transmogrifier
         raise RuntimeError
       end
 
-      def setup(selector, hash)
+      def setup(selector, key_path)
+        key_path.hash
       end
 
       def apply!(hash)
@@ -19,13 +20,13 @@ module Transmogrifier
         @value = value
       end
 
-      def setup(selector, hash)
-        # mkdir
+      def setup(selector, key_path)
+        key_path.mkdir(selector)
+        super
       end
 
-      def apply!(hash)
-        hash[@name] = @value
-        hash
+      def apply!(match)
+        match.value[@name] = @value
       end
     end
 
@@ -34,9 +35,8 @@ module Transmogrifier
         @name = name
       end
 
-      def apply!(hash)
-        hash.delete(@name)
-        hash
+      def apply!(match)
+        match.value.delete(@name)
       end
     end
 
@@ -46,9 +46,8 @@ module Transmogrifier
         @to = to
       end
 
-      def apply!(hash)
-        hash[@to] = hash.delete(@from)
-        hash
+      def apply!(match)
+        match.slice[@to] = match.slice.delete(@from)
       end
     end
 
@@ -59,11 +58,10 @@ module Transmogrifier
         @new_value = new_value
       end
 
-      def apply!(hash)
-        if hash[@key] == @value
-          hash[@key] = @new_value
+      def apply!(match)
+        if match.value[@key] == @value
+          match.value[@key] = @new_value
         end
-        hash
       end
     end
   end

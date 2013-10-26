@@ -1,5 +1,7 @@
 module Transmogrifier
   class KeyPath
+    attr_reader :hash
+
     def initialize(hash)
       @hash = hash
     end
@@ -13,8 +15,20 @@ module Transmogrifier
     def modify(path, &blk)
       matches = find_matches(path)
       matches.each do |match|
-        blk.call(match.slice)
+        blk.call(match)
       end
+    end
+
+    def mkdir(path)
+      keys = path.split(".")
+      root_matching = keys[0] == ""
+      return if !root_matching # TODO: this should probably be a raise?
+
+      keys.shift
+
+      output_hash = @hash.dup
+      build_hash(output_hash, keys)
+      @hash = output_hash
     end
 
     private
@@ -23,7 +37,7 @@ module Transmogrifier
       matches = []
 
       if path == "."
-        matches << Match.new(nil, nil, nil, @hash)
+        matches << Match.new(nil, nil, @hash, @hash)
         return matches
       end
 
@@ -50,7 +64,6 @@ module Transmogrifier
             idx = 0
           end
         end
-
       end
 
       matches
@@ -68,6 +81,20 @@ module Transmogrifier
           obj.each {|v| traverse(v, parent, &blk) }
         else
           blk.call(nil, nil, parent, obj)
+      end
+    end
+
+    def build_hash(input_hash, keys)
+      return input_hash if keys.empty?
+
+      key = keys.shift
+      if input_hash.has_key?(key)
+        if !input_hash[key].is_a?(Array)
+          build_hash(input_hash[key], keys)
+        end
+      else
+        input_hash[key] = {}
+        build_hash(input_hash[key], keys)
       end
     end
 

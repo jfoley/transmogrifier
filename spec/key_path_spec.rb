@@ -1,6 +1,13 @@
 require "transmogrifier"
 
 describe Transmogrifier::KeyPath do
+  #describe "#build_hash" do
+  #  it "works" do
+  #    Transmogrifier::KeyPath.new({}).build_hash(input = {}, ["first", "second"])
+  #    input.should == {"first"=>{"second"=>{}}}
+  #  end
+  #end
+
   describe "#find" do
     it "returns the hash if the path is just a dot" do
       input_hash = {"top_level" => "value" }
@@ -52,7 +59,7 @@ describe Transmogrifier::KeyPath do
     context "when the key is top level" do
       it "calls the block on the top level hash" do
         input_hash = {"top_level" => { "nested" => "value" }}
-        blk = ->(hash){ hash["top_level"] = "new_value"; hash }
+        blk = ->(match){ match.slice["top_level"] = "new_value" }
 
         Transmogrifier::KeyPath.new(input_hash).modify(".top_level", &blk)
         expect(input_hash).to eq({"top_level" => "new_value"})
@@ -62,7 +69,7 @@ describe Transmogrifier::KeyPath do
     context "when the key is nested" do
       it "finds a hash and then calls the block on it" do
         input_hash = {"top_level" => { "nested" => "value" }}
-        blk = ->(hash){ hash["nested"] = "new_value"; hash }
+        blk = ->(match){ match.slice["nested"] = "new_value" }
 
         Transmogrifier::KeyPath.new(input_hash).modify(".top_level.nested", &blk)
         expect(input_hash).to eq({"top_level" => { "nested" => "new_value" }})
