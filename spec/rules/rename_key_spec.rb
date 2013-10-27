@@ -5,7 +5,7 @@ describe Transmogrifier::Rules::RenameKey do
   subject { described_class.new(old_key_name, new_key_name) }
   let(:old_key_name) { "key" }
   let(:new_key_name) { "new_key" }
-  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash, input_hash) }
+  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash) }
   let(:input_hash) { { "key" => "value" } }
 
   context "when the key is top level" do
@@ -17,10 +17,10 @@ describe Transmogrifier::Rules::RenameKey do
   end
 
   context "when the key is nested" do
-    let(:input_hash) { {"key" => { "nested" => "value"} } }
     let(:old_key_name) { "nested" }
     let(:new_key_name) { "new_key" }
-    let(:match) { Transmogrifier::Match.new("key", "nested", "value", input_hash["key"]) }
+    let(:input_hash) { { "key" => {"nested" => "value"} } }
+    let(:match) { Transmogrifier::Match.new(input_hash["key"], "nested", "value") }
 
     it "renames a key" do
       subject.apply!(match)

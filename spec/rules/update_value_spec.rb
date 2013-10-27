@@ -6,7 +6,7 @@ describe Transmogrifier::Rules::UpdateValue do
   let(:key_name) { "key" }
   let(:old_value) { "value" }
   let(:new_value) { "new_value" }
-  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash, input_hash) }
+  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash) }
 
   let(:input_hash) { { "key" => "value" } }
   let(:output_hash) {{ "key"=>"new_value" }}

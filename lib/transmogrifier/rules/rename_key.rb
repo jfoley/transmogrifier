@@ -8,7 +8,12 @@ module Transmogrifier
       end
 
       def apply!(match)
-        match.slice[@to] = match.slice.delete(@from)
+        if match.parent.nil?
+          match.value[@to] = match.value.delete(@from)
+        else
+          match.parent[@to] = match.parent.delete(@from)
+        end
+
       end
     end
   end

@@ -8,7 +8,7 @@ module Transmogrifier
       end
 
       def apply!(match)
-        match.slice[@key] = [match.slice[@key]]
+        match.value[@key] = [match.value[@key]]
       end
     end
   end

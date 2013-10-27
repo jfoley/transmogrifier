@@ -4,7 +4,7 @@ require 'transmogrifier/rules/delete_key'
 describe Transmogrifier::Rules::DeleteKey do
   subject { described_class.new(key_name) }
   let(:key_name) { "extra_key" }
-  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash, input_hash) }
+  let(:match) { Transmogrifier::Match.new(nil, nil, input_hash) }
   let(:input_hash) { { "key" => "value", "extra_key" => "value" } }
 
   it "removes the key" do

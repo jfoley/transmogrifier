@@ -7,9 +7,7 @@ module Transmogrifier
     end
 
     def find(path)
-      matches = find_matches(path)
-
-      matches.map(&:slice)
+      find_matches(path)
     end
 
     def modify(path, &blk)
@@ -37,7 +35,7 @@ module Transmogrifier
       matches = []
 
       if path == "."
-        matches << Match.new(nil, nil, @hash, @hash)
+        matches << Match.new(nil, nil, @hash)
         return matches
       end
 
@@ -55,13 +53,13 @@ module Transmogrifier
       end
 
       idx = 0
-      traverse(@hash, nil) do |key, value, parent, slice|
+      traverse(@hash, nil) do |parent, key, value|
         if keys[idx] == key
           idx += 1
         end
 
         if keys.length == idx
-          matches << Match.new(parent, key, value, slice)
+          matches << Match.new(parent, key, value)
           idx = 0
         end
       end
@@ -73,14 +71,14 @@ module Transmogrifier
       case obj
         when Hash
           obj.each do |k, v|
-            blk.call(k, v, parent, obj)
+            blk.call(obj, k, v)
             # Pass hash key as parent
             traverse(v, k, &blk)
           end
         when Array
           obj.each {|v| traverse(v, parent, &blk) }
         else
-          blk.call(nil, nil, parent, obj)
+          blk.call(parent, nil, nil)
       end
     end
 
@@ -100,16 +98,17 @@ module Transmogrifier
   end
 
   class Match
-    attr_accessor :parent, :key, :value, :slice
-    def initialize(parent, key, value, slice)
-      @parent, @key, @value, @slice = parent, key, value, slice
+    attr_accessor :parent, :key, :value
+    def initialize(parent, key, value)
+      raise ArgumentError if parent.nil? && !key.nil?
+      raise ArgumentError if !parent.nil? && (key.nil? || value.nil?)
+      @parent, @key, @value = parent, key, value
     end
 
     def ==(rhs)
       parent == rhs.parent &&
       key == rhs.key &&
-      value == rhs.value &&
-      slice == rhs.slice
+      value == rhs.value
     end
     alias :eql? :==
   end
