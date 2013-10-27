@@ -43,26 +43,26 @@ module Transmogrifier
 
       keys = path.split(".")
 
-      idx = 0
-
       # Root matching is a special case where we deal with a path that starts with a "."
       root_matching = keys[0] == ""
-
-      traverse(@hash, nil) do |key, value, parent, slice|
-        if root_matching
-          idx += 1
-          if keys[idx] == key && idx == keys.length - 1
-            matches << Match.new(parent, key, value, slice)
-          end
+      root_has_first_key = @hash.has_key?(keys[1])
+      if root_matching
+        if root_has_first_key
+          keys.shift
         else
-          if keys[idx] == key
-            idx += 1
-          end
+          return []
+        end
+      end
 
-          if keys.length == idx
-            matches << Match.new(parent, key, value, slice)
-            idx = 0
-          end
+      idx = 0
+      traverse(@hash, nil) do |key, value, parent, slice|
+        if keys[idx] == key
+          idx += 1
+        end
+
+        if keys.length == idx
+          matches << Match.new(parent, key, value, slice)
+          idx = 0
         end
       end
 
