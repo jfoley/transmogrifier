@@ -48,9 +48,14 @@ describe Transmogrifier::KeyPath do
         "another_top_level" => {
           "nested" => "another_value",
         },
+        "last_top_level" => {
+          "middle_level" => {
+            "nested" => "deep_value"
+          }
+        }
       }
 
-      expected_output = [{"nested" => "value"}, {"nested" => "another_value"}]
+      expected_output = [{"nested" => "value"}, {"nested" => "another_value"}, {"nested" => "deep_value"}]
       expect(Transmogrifier::KeyPath.new(input_hash).find("nested")).to eq(expected_output)
     end
   end
