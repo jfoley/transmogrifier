@@ -106,7 +106,7 @@ describe Transmogrifier::Engine do
           ]
         },
       }
-      engine.add_rule("top_level", Transmogrifier::Rules::MoveKey.new("nested", "top_level.list_of_things"))
+      engine.add_rule("top_level", Transmogrifier::Rules::MoveKey.new("nested", "list_of_things.receiver"))
 
       expect(engine.run(input_hash)).to eq({
         "top_level" => {
