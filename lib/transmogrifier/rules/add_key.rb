@@ -13,7 +13,16 @@ module Transmogrifier
       end
 
       def apply!(match)
-        match.value[@name] = @value
+        p match
+        if match.parent.nil?
+          match.value[@name] = @value
+        else
+          if match.value.is_a?(Array)
+            match.value << {@name => @value}
+          else
+            match.parent[@name] = @value
+          end
+        end
       end
     end
   end

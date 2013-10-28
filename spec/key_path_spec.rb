@@ -90,6 +90,22 @@ describe Transmogrifier::KeyPath do
 
       expect(Transmogrifier::KeyPath.new(input_hash).find("nested")).to eq(matches)
     end
+
+    it "matches array elements" do
+      input_hash = {
+        "top_level" => [{
+          "name" => "array_element",
+        }],
+      }
+
+      match = Transmogrifier::Match.new(
+        {"name" => "array_element"},
+        "name",
+        "array_element",
+      )
+
+      expect(Transmogrifier::KeyPath.new(input_hash).find("array_element")).to eq([match])
+    end
   end
 
   describe "#modify" do

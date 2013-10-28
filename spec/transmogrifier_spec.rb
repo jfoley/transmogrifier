@@ -74,4 +74,24 @@ describe Transmogrifier::Engine do
       expect(engine.run(input_hash)).to eq({"key" => ["value"]})
     end
   end
+
+  describe "demoting a key" do
+    it "works" do
+      input_hash = {
+        "top_level" => [{
+          "name" => "array_element",
+        }],
+        "sibling" => "demoted",
+      }
+
+      expected = {
+        "top_level" => [{
+          "name" => "array_element",
+          "sibling" => "demoted",
+        }],
+      }
+      engine.add_rule(".", Transmogrifier::Rules::DemoteKey.new("sibling", "array_element"))
+      expect(engine.run(input_hash)).to eq(expected)
+    end
+  end
 end
