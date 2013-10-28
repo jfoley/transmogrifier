@@ -54,7 +54,7 @@ module Transmogrifier
 
       idx = 0
       traverse(@hash, nil) do |parent, key, value|
-        if keys[idx] == key
+        if keys[idx] == key || parent["name"] == keys[idx]
           idx += 1
         end
 
