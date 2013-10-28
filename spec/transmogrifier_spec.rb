@@ -74,4 +74,47 @@ describe Transmogrifier::Engine do
       expect(engine.run(input_hash)).to eq({"key" => ["value"]})
     end
   end
+
+  describe "moving keys" do
+    it "moves a key sideways" do
+      input_hash = {
+        "top_level" => {
+          "nested" => "value"
+        },
+
+        "sibling" => "sibling_value",
+      }
+
+      engine.add_rule(".", Transmogrifier::Rules::MoveKey.new("sibling", "top_level"))
+
+      expect(engine.run(input_hash)).to eq({
+        "top_level" => {
+          "nested" => "value",
+          "sibling" => "sibling_value"
+        }
+      })
+    end
+
+    it "moves a key down" do
+      input_hash = {
+        "top_level" => {
+          "nested" => "value",
+          "list_of_things" => [
+            {
+              "name" => "receiver",
+            }
+          ]
+        },
+      }
+      engine.add_rule("top_level", Transmogrifier::Rules::MoveKey.new("nested", "top_level.list_of_things"))
+
+      expect(engine.run(input_hash)).to eq({
+        "top_level" => {
+          "list_of_things" => [
+            { "name" => "receiver", "nested" => "value" }
+          ]
+        }
+      })
+    end
+  end
 end

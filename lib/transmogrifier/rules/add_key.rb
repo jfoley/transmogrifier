@@ -1,4 +1,5 @@
 require "transmogrifier/rules/base"
+
 module Transmogrifier
   module Rules
     class AddKey < Base
@@ -13,7 +14,16 @@ module Transmogrifier
       end
 
       def apply!(match)
-        match.value[@name] = @value
+        #sub_matches = KeyPath.new(match.value).find(@name)
+        #sub_matches.each do |sub_match|
+        #  p sub_match
+        #  sub_match.value[@name] = @value
+        #end
+        if match.value[@name].is_a?(Hash)
+          match.value[@name].merge!(@value)
+        else
+          match.value[@name] = @value
+        end
       end
     end
   end
