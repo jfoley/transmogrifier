@@ -9,10 +9,11 @@ module Transmogrifier
       end
 
       def apply!(match)
+        #p match
         delete = DeleteKey.new(@from)
         value = delete.apply!(match)
 
-        sub_matches = KeyPath.new(match.value).find(@to).each do |sub_match|
+        sub_matches = KeyPath.new(match.parent).find(@to).each do |sub_match|
           AddKey.new(@from, value).apply!(sub_match)
         end
       end

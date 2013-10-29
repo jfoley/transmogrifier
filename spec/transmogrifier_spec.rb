@@ -116,5 +116,36 @@ describe Transmogrifier::Engine do
         }
       })
     end
+
+    it "moves between arrays" do
+      input_hash = {
+        "top_level" => [
+          {
+            "name" => "nested",
+            "value" => "move-me",
+            "array" => [
+              {
+                "name" => "inside"
+              }
+            ]
+          }
+        ]
+      }
+      engine.add_rule("top_level.nested", Transmogrifier::Rules::MoveKey.new("value", "array.inside"))
+
+      expect(engine.run(input_hash)).to eq({
+        "top_level" => [
+          {
+            "name" => "nested",
+            "array" => [
+              {
+                "name" => "inside",
+                "value" => "move-me",
+              }
+            ]
+          }
+        ]
+      })
+    end
   end
 end

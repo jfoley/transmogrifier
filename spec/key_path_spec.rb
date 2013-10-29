@@ -95,16 +95,34 @@ describe Transmogrifier::KeyPath do
       input_hash = {
         "top_level" => [{
           "name" => "array_element",
+        },{
+          "name" => "not_matched",
         }],
       }
 
       match = Transmogrifier::Match.new(
+        {"top_level" => [{"name" => "array_element"},{"name" => "not_matched"}]},
+        "[name=array_element]",
         {"name" => "array_element"},
-        "name",
-        "array_element",
       )
 
-      expect(Transmogrifier::KeyPath.new(input_hash).find("array_element")).to eq([match])
+      expect(Transmogrifier::KeyPath.new(input_hash).find(".top_level.[name=array_element]")).to eq([match])
+    end
+
+    it "matches nested array elements" do
+      input_hash = {
+        "top_level" => [{
+          "name" => "array_element",
+        }],
+      }
+
+      match = Transmogrifier::Match.new(
+        {"top_level" => [{"name" => "array_element"}]},
+        "top_level",
+        {"name" => "array_element"},
+      )
+
+      expect(Transmogrifier::KeyPath.new(input_hash).find("[name=array_element]")).to eq([match])
     end
   end
 

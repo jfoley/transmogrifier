@@ -8,6 +8,7 @@ module Transmogrifier
       end
 
       def apply!(match)
+        #p match
         match.value.delete(@name)
       end
     end
