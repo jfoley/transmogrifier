@@ -1,29 +1,20 @@
 module Transmogrifier
   class Engine
     def initialize
-      @selectors = {}
+      @rules = []
     end
 
-    def add_rule(selector, rule)
-      if @selectors.has_key?(selector)
-        @selectors[selector] << rule
-      else
-        @selectors[selector] = [rule]
+    def add_rule(rule_type, selector, *options)
+      @rules << case rule_type
+        when :append then Transmogrifier::Rules::Append.new(selector, *options)
+        when :delete then Transmogrifier::Rules::Delete.new(selector, *options)
+        when :move   then Transmogrifier::Rules::Move.new(selector, *options)
       end
     end
 
     def run(input_hash)
       output_hash = input_hash.dup
-
-      @selectors.each do |selector, rules|
-        rules.each do |rule|
-          key_path = KeyPath.new(output_hash)
-
-          output_hash = rule.setup(selector, key_path)
-
-          key_path.modify(selector, &->(match){ rule.apply!(match) } )
-        end
-      end
+      @rules.each{ |rule| output_hash = rule.apply!(output_hash) }
 
       output_hash
     end

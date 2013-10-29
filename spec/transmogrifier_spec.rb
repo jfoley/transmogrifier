@@ -3,149 +3,145 @@ require "transmogrifier"
 describe Transmogrifier::Engine do
   subject(:engine) { described_class.new }
 
-  describe "renaming a key" do
-    context "when the path has multiple matches" do
-      let(:input_hash) {{
-        "top_key" => { "nested" => "value"},
-        "another" => { "nested" => "another"},
-        "unrelated" => { "unchanged" => "the_same" },
-      }}
 
-      let(:output_hash) {{
-        "top_key" => { "new_key" => "value"},
-        "another" => { "new_key" => "another"},
-        "unrelated" => { "unchanged" => "the_same" },
-      }}
+  describe "appending keys" do
+    let(:input_hash) {{
+      "key" => "value",
+      "array" => [],
+    }}
+    context "when the selector finds a HashNode" do
+      before { engine.add_rule(:append, "", {"new_key" => "new_value"})}
 
-      it "renames a key" do
-        engine.add_rule("nested", Transmogrifier::Rules::RenameKey.new("nested", "new_key"))
+      it "appends to the hash" do
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [],
+          "new_key" => "new_value",
+        })
+      end
+    end
 
-        expect(engine.run(input_hash)).to eq(output_hash)
+    context "when the selector finds an ArrayNode" do
+      before { engine.add_rule(:append, "array", {"new_key" => "new_value"})}
+
+      it "appends to the array" do
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [{"new_key" => "new_value"}],
+        })
       end
     end
   end
 
-  describe "adding a key" do
-    describe "when the given hash doesnt have intermediate keys" do
-      it "it takes a selector and builds empty hashes along the way (aka: mkdir -p)" do
-        output_hash = {
-          "top" => {
-            "next" => {
-              "third" => { "deeply_nested" => nil },
-            }
-          }
-        }
-
-        engine.add_rule(".top.next.third", Transmogrifier::Rules::AddKey.new("deeply_nested", nil))
-
-        expect(engine.run({})).to eq(output_hash)
-      end
-    end
-  end
-
-  describe "rule ordering" do
-    let(:output_hash) {{
-      "key" => nil,
-      "other_key" => "default",
-      "transformed_key" => "default-transformed",
+  describe "deleting keys" do
+    let(:input_hash) {{
+      "key" => "value",
+      "array" => [{"inside" => "value"}],
+      "nested" => {
+        "key" => "value"
+      },
     }}
 
-    it "applies rules in order" do
-      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("extra_key", nil))
-      engine.add_rule(".", Transmogrifier::Rules::DeleteKey.new("extra_key"))
-      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("key", nil))
-      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("other_key", "default"))
-      engine.add_rule(".", Transmogrifier::Rules::AddKey.new("transformed_key", "default"))
-      engine.add_rule(".", Transmogrifier::Rules::UpdateValue.new("transformed_key", "default", "default-transformed"))
+    context "when the selector finds a HashNode" do
+      before { engine.add_rule(:delete, "", "nested")}
 
-      expect(engine.run({})).to eq(output_hash)
+      it "deletes the hash from the parent" do
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [{"inside" => "value"}],
+        })
+      end
     end
-  end
 
-  describe "nested rules" do
+    context "when the selector finds an ArrayNode" do
+      before { engine.add_rule(:delete, "array", "[inside=value]")}
 
-  end
-
-  describe "turning a key in to an array" do
-    it "wraps the value in an array" do
-      input_hash = { "key" => "value" }
-      engine.add_rule(".", Transmogrifier::Rules::SingleToArray.new("key"))
-
-      expect(engine.run(input_hash)).to eq({"key" => ["value"]})
+      it "deletes the array from the parent" do
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [],
+          "nested" => {
+            "key" => "value"
+          },
+        })
+      end
     end
   end
 
   describe "moving keys" do
-    it "moves a key sideways" do
-      input_hash = {
-        "top_level" => {
-          "nested" => "value"
-        },
+    let(:input_hash) {{
+      "key" => "value",
+      "array" => [{"inside" => "value"}],
+      "nested" => {
+        "key" => "value",
+      },
+    }}
 
-        "sibling" => "sibling_value",
-      }
+    context "when the selector finds a HashNode" do
+      it "moves the hash to the to selector" do
+        engine.add_rule(:move, "", "array.[inside=value]", "nested")
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [],
+          "nested" => {
+            "key" => "value",
+            "inside" => "value",
+          },
+        })
+      end
 
-      engine.add_rule(".", Transmogrifier::Rules::MoveKey.new("sibling", "top_level"))
+      it "moves the hash to a new child if the key doesn't exist" do
+        engine.add_rule(:move, "", "array.[inside=value]", "nested.nested_again")
 
-      expect(engine.run(input_hash)).to eq({
-        "top_level" => {
-          "nested" => "value",
-          "sibling" => "sibling_value"
-        }
-      })
-    end
-
-    it "moves a key down" do
-      input_hash = {
-        "top_level" => {
-          "nested" => "value",
-          "list_of_things" => [
-            {
-              "name" => "receiver",
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "array" => [],
+          "nested" => {
+            "key" => "value",
+            "nested_again" => {
+              "inside" => "value",
             }
-          ]
-        },
-      }
-      engine.add_rule("top_level", Transmogrifier::Rules::MoveKey.new("nested", "list_of_things.receiver"))
+          },
+        })
+      end
 
-      expect(engine.run(input_hash)).to eq({
-        "top_level" => {
-          "list_of_things" => [
-            { "name" => "receiver", "nested" => "value" }
-          ]
-        }
-      })
     end
 
-    it "moves between arrays" do
-      input_hash = {
-        "top_level" => [
-          {
-            "name" => "nested",
-            "value" => "move-me",
-            "array" => [
-              {
-                "name" => "inside"
-              }
-            ]
-          }
-        ]
-      }
-      engine.add_rule("top_level.nested", Transmogrifier::Rules::MoveKey.new("value", "array.inside"))
+    context "when the selector finds an ArrayNode" do
+      before { engine.add_rule(:move, "", "array", "nested.array") }
 
-      expect(engine.run(input_hash)).to eq({
-        "top_level" => [
-          {
-            "name" => "nested",
-            "array" => [
-              {
-                "name" => "inside",
-                "value" => "move-me",
-              }
-            ]
-          }
-        ]
-      })
+      it "moves the array to the to selector" do
+        output_hash = engine.run(input_hash)
+        expect(output_hash).to eq({
+          "key" => "value",
+          "nested" => {
+            "key" => "value",
+            "array" => [{"inside" => "value"}],
+          },
+        })
+      end
+    end
+
+    context "using move as a rename" do
+      before { engine.add_rule(:move, "", "array", "new_array") }
+
+      it "renames the array" do
+        output_hash = engine.run(input_hash)
+
+        expect(output_hash).to eq({
+          "key" => "value",
+          "new_array" => [{"inside" => "value"}],
+          "nested" => {
+            "key" => "value",
+          },
+        })
+      end
     end
   end
 end
