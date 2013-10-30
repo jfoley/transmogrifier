@@ -32,8 +32,6 @@ module Transmogrifier
           end
         end
 
-
-
         top.as_hash
       end
     end

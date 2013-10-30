@@ -57,7 +57,7 @@ module Transmogrifier
         if keys.empty?
           nodes = @children.values
         else
-          nodes = @children.values.map {|a| a.all(keys) }
+          nodes = @children.values.map { |a| a.all(keys) }
         end
       else
         child = @children[key]
@@ -110,7 +110,7 @@ module Transmogrifier
       key = keys.shift
 
       if key == "*"
-        nodes =  @array.map {|a| a.all(keys) }
+        nodes =  @array.map { |a| a.all(keys) }
       else
         nodes = find_nodes(key)
         if keys.any? && nodes.any?
