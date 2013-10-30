@@ -1,5 +1,16 @@
 module Transmogrifier
   class Engine
+    def self.load_rules(rules_array)
+      engine = new
+      rules_array.each do |rule|
+        type = rule.delete("type").to_sym
+        selector = rule.delete("selector")
+        options = [rule["object"], rule["from"], rule["to"], rule["name"]].compact
+        engine.add_rule(type, selector, *options)
+      end
+      engine
+    end
+
     def initialize
       @rules = []
     end

@@ -3,6 +3,45 @@ require "transmogrifier"
 describe Transmogrifier::Engine do
   subject(:engine) { described_class.new }
 
+  describe "loading rules from a hash" do
+    it "loads rules from an array" do
+
+    rules = [
+      {
+        "type" => "append",
+        "selector" => "top",
+        "object" => {"some" => "attributes"}
+      },
+
+      {
+        "type" => "move",
+        "selector" => "top",
+        "from" => "key1",
+        "to" => "key2",
+      },
+
+      {
+        "type" => "delete",
+        "selector" => "top",
+        "name" => "key3"
+      }
+    ]
+
+    input_hash = {
+      "top" => {
+        "key1" => "value1",
+        "key3" => "value2"
+      }
+    }
+    engine = described_class.load_rules(rules)
+    expect(engine.run(input_hash)).to eq({
+      "top" => {
+        "some" => "attributes",
+        "key2" => "value1",
+      }
+    })
+    end
+  end
 
   describe "appending keys" do
     let(:input_hash) {{
