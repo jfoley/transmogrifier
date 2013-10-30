@@ -30,14 +30,6 @@ module Transmogrifier
       end
     end
 
-    describe "#find" do
-      it "raises a NotImplementedError" do
-        expect {
-          ValueNode.new("hello").find("hello?")
-        }.to raise_error(NotImplementedError)
-      end
-    end
-
     describe "#delete" do
       it "raises a NotImplementedError" do
         expect {
@@ -83,6 +75,20 @@ module Transmogrifier
       it "does something when the keys cant be found" do
         node = HashNode.new({"key1" => {"key2" => "value"}})
         expect(node.find(["not_there", "also_not_there"])).to eq(nil)
+      end
+    end
+
+    describe "#all" do
+      it "returns wildcard matches" do
+        node = HashNode.new({"key1" => "value"})
+
+        expect(node.all(["*"]).map(&:as_hash)).to eq(["value"])
+      end
+
+      it "returns wildcard matches" do
+        node = HashNode.new({"key1" => {"key2" => "value"}})
+
+        expect(node.all(["key1", "*"]).map(&:as_hash)).to eq(["value"])
       end
     end
 
@@ -144,6 +150,22 @@ module Transmogrifier
       it "returns nil when the node can't be found" do
         node = ArrayNode.new(["name" => "object"])
         expect(node.find([{"name" => "not_there"}, "something"])).to eq(nil)
+      end
+    end
+
+    describe "#all" do
+      it "returns wildcard matches" do
+        array = [{"name" => "object1", "nested" => {"key1" => "value1"}}, {"name" => "object2",  "nested" => {"key2" => "value2"}}]
+        node = ArrayNode.new(array)
+
+        expect(node.all(["*", "nested"]).map(&:as_hash)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
+      end
+
+      it "filters by attributes" do
+        array = [{"type" => "object", "key1" => "value1"}, {"type" => "object", "key2" => "value2"}]
+        node = ArrayNode.new(array)
+
+        expect(node.all([{"type" => "object"}]).map(&:as_hash)).to eq(array)
       end
     end
 

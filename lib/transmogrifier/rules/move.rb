@@ -8,27 +8,33 @@ module Transmogrifier
       end
 
       def apply!(input_hash)
-        top_level_node = Node.for(input_hash)
+        top = Node.for(input_hash)
 
-        keys = Selector.new(@parent).keys + Selector.new(@from).keys
-        from_key = keys.pop
-        node = top_level_node.find(keys.dup)
+        parents = top.all(Selector.new(@parent).keys)
 
-        deleted_object = node.delete(from_key)
+        parents.each do |parent|
+          keys = Selector.new(@from).keys
+          from_key = keys.pop
 
-        keys = Selector.new(@parent).keys + Selector.new(@to).keys
+          from_parent = parent.find(keys.dup)
 
-        node = top_level_node.find(keys.dup)
+          deleted_object = from_parent.delete(from_key)
 
-        if node.nil?
-          new_key = keys.pop
-          node = top_level_node.find(keys)
-          node.append({new_key => deleted_object.as_hash})
-        else
-          node.append(deleted_object.as_hash)
+          keys = Selector.new(@to).keys
+          to_parent = parent.find(keys.dup)
+
+          if to_parent.nil?
+            new_key = keys.pop
+            to_parent = parent.find(keys)
+            to_parent.append({new_key => deleted_object.as_hash})
+          else
+            to_parent.append(deleted_object.as_hash)
+          end
         end
 
-        top_level_node.as_hash
+
+
+        top.as_hash
       end
     end
   end

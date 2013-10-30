@@ -7,14 +7,16 @@ module Transmogrifier
       end
 
       def apply!(input_hash)
-        top_level_node = Node.for(input_hash)
+        top = Node.for(input_hash)
         keys = Selector.new(@parent).keys
-        node = top_level_node.find(keys)
-
+        nodes = top.all(keys)
         child_key = Selector.new(@to_delete).key
-        node.delete(child_key)
 
-        top_level_node.as_hash
+        nodes.each do |node|
+          node.delete(child_key)
+        end
+
+        top.as_hash
       end
     end
   end

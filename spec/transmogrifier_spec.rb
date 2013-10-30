@@ -110,7 +110,42 @@ describe Transmogrifier::Engine do
           },
         })
       end
+    end
 
+    context "when the from selector has a wildcard" do
+      let(:input_hash) {{
+        "list_of_things" => [
+          {
+            "name" => "object1",
+            "property" => "property1",
+            "nested" => {}
+          },
+          {
+            "name" => "object2",
+            "property" => "property2",
+            "nested" => {}
+          },
+        ]
+      }}
+
+      before { engine.add_rule(:move, "list_of_things.*", "property", "nested.property") }
+
+      it "moves the matched hash to the correct place" do
+        output_hash = engine.run(input_hash)
+
+        expect(output_hash).to eq({
+          "list_of_things" => [
+            {
+              "name" => "object1",
+              "nested" => { "property" => "property1" }
+            },
+            {
+              "name" => "object2",
+              "nested" => { "property" => "property2" }
+            },
+          ]
+        })
+      end
     end
 
     context "when the selector finds an ArrayNode" do

@@ -45,18 +45,33 @@ module Transmogrifier
     end
 
     def find(keys)
-      case keys.length
-        when 0
-          self
-        when 1
-          @children[keys.first]
-        else
-          if child = @children[keys.first]
-            keys.shift
-            child.find(keys)
-          end
-      end
+      all(keys).first
     end
+
+    def all(keys)
+      return [self] if keys.empty?
+      keys = keys.dup
+      key = keys.shift
+
+      if key == "*"
+        if keys.empty?
+          nodes = @children.values
+        else
+          nodes = @children.values.map {|a| a.all(keys) }
+        end
+      else
+        child = @children[key]
+
+        if keys.empty? || child.nil?
+          nodes = [child]
+        else
+          nodes = [child.all(keys)]
+        end
+      end
+
+      nodes.flatten.compact
+    end
+
 
     def delete(key)
       @children.delete(key)
@@ -86,20 +101,28 @@ module Transmogrifier
     end
 
     def find(keys)
-      return self if keys.empty?
+      all(keys).first
+    end
+
+    def all(keys)
+      return [self] if keys.empty?
+      keys = keys.dup
       key = keys.shift
 
-      node = find_node(key)
-
-      if keys.empty? || node.nil?
-        node
+      if key == "*"
+        nodes =  @array.map {|a| a.all(keys) }
       else
-        node.find(keys)
+        nodes = find_nodes(key)
+        if keys.any? && nodes.any?
+          nodes = nodes.map { |x| x.all(keys) }
+        end
       end
+
+      nodes.flatten.compact
     end
 
     def delete(key)
-      node = find_node(key)
+      node = find_nodes(key).first
       @array.delete(node)
     end
 
@@ -112,8 +135,8 @@ module Transmogrifier
     end
 
     private
-    def find_node(attributes)
-      @array.detect do |node|
+    def find_nodes(attributes)
+      @array.select do |node|
         attributes.all? do |k, v|
           node.as_hash[k] == v
         end
