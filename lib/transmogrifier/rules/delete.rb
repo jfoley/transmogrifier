@@ -8,9 +8,9 @@ module Transmogrifier
 
       def apply!(input_hash)
         top = Node.for(input_hash)
-        keys = Selector.new(@parent).keys
+        keys = Selector.from_string(@parent).keys
         nodes = top.all(keys)
-        child_key = Selector.new(@to_delete).key
+        child_key = Selector.from_string(@to_delete).key
 
         nodes.each do |node|
           node.delete(child_key)

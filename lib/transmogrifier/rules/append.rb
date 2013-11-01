@@ -8,7 +8,7 @@ module Transmogrifier
 
       def apply!(input_hash)
         top = Node.for(input_hash)
-        keys = Selector.new(@selector).keys
+        keys = Selector.from_string(@selector).keys
         nodes = top.all(keys)
         nodes.each do |node|
           node.append(@hash)

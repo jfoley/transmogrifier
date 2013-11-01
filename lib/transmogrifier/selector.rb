@@ -1,18 +1,23 @@
 module Transmogrifier
   class Selector
-    def initialize(string)
-      @keys = string.split(".").reject(&:empty?).map do |str|
-        matches = str.scan(/\[(.*)=(.*)\]/).flatten
-        matches.any? ? {matches[0] => matches[1]} : str
+    KEY_VALUE_REGEX = /\[(.*)=(.*)\]/
+
+    def self.from_string(string)
+      keys = string.split(".").map do |str|
+        match = str.scan(KEY_VALUE_REGEX).first
+        match ? { match.first => match.last } : str
       end
+      new(keys)
+    end
+
+    attr_reader :keys
+
+    def initialize(keys)
+      @keys = keys
     end
 
     def key
-      keys.first
-    end
-
-    def keys
-      @keys
+      @keys.first
     end
   end
 end

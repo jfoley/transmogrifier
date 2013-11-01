@@ -10,17 +10,17 @@ module Transmogrifier
       def apply!(input_hash)
         top = Node.for(input_hash)
 
-        parents = top.all(Selector.new(@parent).keys)
+        parents = top.all(Selector.from_string(@parent).keys)
 
         parents.each do |parent|
-          keys = Selector.new(@from).keys
+          keys = Selector.from_string(@from).keys
           from_key = keys.pop
 
           from_parent = parent.find(keys.dup)
 
           deleted_object = from_parent.delete(from_key)
 
-          keys = Selector.new(@to).keys
+          keys = Selector.from_string(@to).keys
           to_parent = parent.find(keys.dup)
 
           if to_parent.nil?
