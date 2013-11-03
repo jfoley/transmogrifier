@@ -1,28 +1,60 @@
 # Transmogrifier
 
-Transmogrifier is a tool that allows you to migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
+Transmogrifier is a tool that allows you to decalaritively migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
 
 ## Usage
-Example usage:
+### Appending a key
+```ruby
+input_hash = {"key" => "value"}
+transmogrifier = Transmogrifier::Engine.new
+transmogrifier.add_rule(:append, "", "new_key", "new_value")
+output_hash = transmogrifier.run(input_hash)
+
+# output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
-old_hash = {"key" => "value", "extra_key" => nil }
 
-transmogrifier = Transmogrifier::Transmogrifier.new
-transmogrifier.add_rule(Transmogrifier::Rules::DeleteKey.new("extra_key"))
-new_hash = transmogrifier.transmogrify!(old_hash)
+### Deleting  a key
+```ruby
+input_hash = {"key" => "value", "extra_key" => "some_value"}
 
-# new hash => {"key" => "value"}
+transmogrifier = Transmogrifier::Engine.new
+transmogrifier.add_rule(:delete, "", "extra_key")
+output_hash = transmogrifier.run(input_hash)
+
+# output_hash => {"key" => "value"}
 ```
 
-Transmogrifier supports several rules.
+### Moving a key
+```ruby
+input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
 
-1. RenameKey
-2. AddKey
-3. DeleteKey
-4. TransformValue
+transmogrifier = Transmogrifier::Engine.new
+transmogrifier.add_rule(:move, "", "key", "nested")
+output_hash = transmogrifier.run(input_hash)
 
-It is also intended to be easy to add your own rules by subclassing Rules::Base.
+# output_hash => {"nested" => {"nested_key" => "nested_value", "key" => "value"}}
+```
 
-### Next steps
-1. code organization
-2. nesting
+### Selectors
+Selectors are a string of hash keys seperated by dots that tell the Engine where to apply a given rule. For example, given the following structure:
+```ruby
+{ 
+  "key" => "value", 
+  "nested" => {
+    "second_level" => {
+      "deep" => "buried_value",
+    },
+  },
+}
+```
+the selector `nested.second_level.deep` will apply to `buried_value`. Rules can also be applied to hashes inside of an array. Given the structure:
+```ruby
+{ 
+  "key" => "value", 
+  "array" => [
+    {"name" => "not me"},
+    {"name" => "this one!"},
+  ],
+}
+```
+the hash with the name `this one!` can be operated on with `array.[name=this one!]`. Arrays can also wildcard match all children. For example to match both hashes in the array above, use the selector `array.[]`. 
