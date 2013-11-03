@@ -83,7 +83,7 @@ module Transmogrifier
     private
 
     def find_nodes(attributes)
-      @array.select { |node| node.merge(attributes) == node }
+      @array.select { |node| node.merge(Hash[attributes]) == node }
     end
   end
 

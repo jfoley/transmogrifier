@@ -1,12 +1,12 @@
 module Transmogrifier
   class Selector
-    KEY_VALUE_REGEX = /\[(.*)=(.*)\]/
+    FILTER_REGEX = /\[(.*)\]/
 
     def self.from_string(string)
       new(
         string.split(".").map do |str|
-          match = str.scan(KEY_VALUE_REGEX).first
-          match ? { match.first => match.last } : str
+          match = str.scan(FILTER_REGEX).flatten.first
+          match ? match.split(",").map { |s| s.split("=") } : str
         end
       )
     end

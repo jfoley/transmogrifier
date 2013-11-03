@@ -173,7 +173,7 @@ describe Transmogrifier::Engine do
                 ]
               }
             end
-            let(:rules) { [ {"type" => "move", "selector" => "list_of_things.*", "from" => "property", "to" => "nested.property"} ] }
+            let(:rules) { [ {"type" => "move", "selector" => "list_of_things.[]", "from" => "property", "to" => "nested.property"} ] }
 
             it "moves the matched hash to the correct place" do
               expect(engine.run(input_hash)).to eq({

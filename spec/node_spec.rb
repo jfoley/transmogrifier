@@ -109,7 +109,7 @@ module Transmogrifier
         array = [{"name" => "object1", "nested" => {"key1" => "value1"}}, {"name" => "object2",  "nested" => {"key2" => "value2"}}]
         node = ArrayNode.new(array)
 
-        expect(node.find_all(["*", "nested"]).map(&:raw)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
+        expect(node.find_all([[], "nested"]).map(&:raw)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
       end
 
       it "filters by attributes" do
