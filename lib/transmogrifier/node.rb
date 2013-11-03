@@ -46,15 +46,11 @@ module Transmogrifier
       key = keys.shift
 
       if key == "*"
-        if keys.empty?
-          nodes = @children.values
-        else
-          nodes = @children.values.map { |a| a.find_all(keys) }
-        end
+        nodes = @children.values.map { |a| a.find_all(keys) }
       else
         child = @children[key]
 
-        if keys.empty? || child.nil?
+        if child.nil?
           nodes = [child]
         else
           nodes = [child.find_all(keys)]
@@ -100,10 +96,7 @@ module Transmogrifier
       if key == "*"
         nodes =  @array.map { |a| a.find_all(keys) }
       else
-        nodes = find_nodes(key)
-        if keys.any? && nodes.any?
-          nodes = nodes.map { |x| x.find_all(keys) }
-        end
+        nodes = find_nodes(key).map { |x| x.find_all(keys) }
       end
 
       nodes.flatten.compact
@@ -140,6 +133,11 @@ module Transmogrifier
 
     def raw
       @value
+    end
+
+    def find_all(keys)
+      return [self] if keys.empty?
+      raise "cannot find children of ValueNode satisfying non-empty selector #{keys}"
     end
   end
 end
