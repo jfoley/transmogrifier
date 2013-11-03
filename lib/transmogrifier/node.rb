@@ -32,94 +32,73 @@ module Transmogrifier
   class HashNode < Node
     def initialize(hash)
       raise unless hash.is_a?(Hash)
-
-      @children = {}
-
-      hash.each do |key, value|
-        @children[key] = Node.for(value)
-      end
+      @hash = hash
     end
 
     def find_all(keys)
-      return [self] if keys.empty?
-      keys = keys.dup
-      key = keys.shift
+      first_key, *remaining_keys = keys
 
-      if key == "*"
-        nodes = @children.values.map { |a| a.find_all(keys) }
+      if first_key.nil?
+        [self]
+      elsif first_key == "*"
+        @hash.values.flat_map { |a| Node.for(a).find_all(remaining_keys) }
+      elsif child = @hash[first_key]
+        Node.for(child).find_all(remaining_keys)
       else
-        child = @children[key]
-
-        if child.nil?
-          nodes = [child]
-        else
-          nodes = [child.find_all(keys)]
-        end
+        []
       end
-
-      nodes.flatten.compact
     end
 
-
     def delete(key)
-      @children.delete(key)
+      Node.for(@hash.delete(key))
     end
 
     def append(hash)
-      hash.each do |key, value|
-        @children[key] = Node.for(value)
-      end
+      @hash.merge!(hash)
     end
 
     def raw
-      hash = {}
-      @children.each do |key, value|
-        hash[key] = value.raw
-      end
-      hash
+      Hash[@hash.map { |k,v| [k, (v.respond_to?(:raw) ? v.raw : v)] }]
     end
   end
 
   class ArrayNode < Node
     def initialize(array)
       raise unless array.is_a?(Array)
-      @array = array.map do |element|
-        Node.for(element)
-      end
+      @array = array
     end
 
     def find_all(keys)
-      return [self] if keys.empty?
-      keys = keys.dup
-      key = keys.shift
+      first_key, *remaining_keys = keys
 
-      if key == "*"
-        nodes =  @array.map { |a| a.find_all(keys) }
+      if first_key.nil?
+        [self]
+      elsif first_key == "*"
+        @array.flat_map { |a| Node.for(a).find_all(remaining_keys) }
       else
-        nodes = find_nodes(key).map { |x| x.find_all(keys) }
+        find_nodes(first_key).flat_map { |x| Node.for(x).find_all(remaining_keys) }
       end
-
-      nodes.flatten.compact
     end
 
     def delete(key)
       node = find_nodes(key).first
-      @array.delete(node)
+      Node.for(@array.delete(node))
     end
 
     def append(node)
-      @array << Node.for(node)
+      @array << Node.for(node).raw
     end
 
     def raw
-      @array.map(&:raw)
+      @array.map { |a| a.respond_to?(:raw) ? a.raw : a }
     end
 
     private
     def find_nodes(attributes)
       @array.select do |node|
         attributes.all? do |k, v|
-          node.raw[k] == v
+          raw_node = node.respond_to?(:raw) ? node.raw : node
+          raw_node[k] == v
         end
       end
     end
