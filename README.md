@@ -7,22 +7,21 @@ Example usage:
 ```
 old_hash = {"key" => "value", "extra_key" => nil }
 
-transmogrifier = Transmogrifier::Transmogrifier.new
-transmogrifier.add_rule(Transmogrifier::Rules::DeleteKey.new("extra_key"))
-new_hash = transmogrifier.transmogrify!(old_hash)
+engine = Transmogrifier::Engine.from_rules_array([
+  { "type" => "delete", "selector" => "", "name" => "extra_key" }
+])
+
+new_hash = engine.run(old_hash)
 
 # new hash => {"key" => "value"}
 ```
 
 Transmogrifier supports several rules.
 
-1. RenameKey
-2. AddKey
-3. DeleteKey
-4. TransformValue
+1. Move
+2. Append
+3. Delete
 
-It is also intended to be easy to add your own rules by subclassing Rules::Base.
-
-### Next steps
+## Next steps
 1. code organization
 2. nesting
