@@ -31,7 +31,7 @@ module Transmogrifier
         it "deletes the node from the array" do
           array = [{"name" => "object1"}, {"name" => "object2"}]
           node = ArrayNode.new(array)
-          expect(node.delete({"name" => "object1"})).to eq({"name" => "object1"})
+          expect(node.delete(["name", "object1"])).to eq({"name" => "object1"})
         end
       end
 
@@ -40,7 +40,7 @@ module Transmogrifier
           array = [{"name" => "object1", "common_key" => "common_value"}, {"name" => "object2", "common_key" => "common_value"}]
           node = ArrayNode.new(array)
           expect {
-            node.delete({"common_key" => "common_value"})
+            node.delete(["common_key", "common_value"])
           }.to raise_error
         end
       end
@@ -49,7 +49,7 @@ module Transmogrifier
         it "returns nil" do
           array = [{"name" => "object1"}, {"name" => "object2"}]
           node = ArrayNode.new(array)
-          expect(node.delete({"name" => "not_present"})).to be_nil
+          expect(node.delete(["name", "not_present"])).to be_nil
         end
       end
     end
