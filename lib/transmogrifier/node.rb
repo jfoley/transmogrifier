@@ -40,8 +40,6 @@ module Transmogrifier
 
       if first_key.nil?
         [self]
-      elsif first_key == "*"
-        @hash.values.flat_map { |a| Node.for(a).find_all(remaining_keys) }
       elsif child = @hash[first_key]
         Node.for(child).find_all(remaining_keys)
       else
