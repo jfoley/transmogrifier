@@ -1,7 +1,6 @@
 module Transmogrifier
   class Node
     def self.for(obj)
-      return obj if obj.kind_of?(Node)
       case obj
         when Hash
           HashNode.new(obj)
@@ -58,7 +57,7 @@ module Transmogrifier
     end
 
     def raw
-      Hash[@hash.map { |k,v| [k, (v.respond_to?(:raw) ? v.raw : v)] }]
+      @hash
     end
   end
 
@@ -90,7 +89,7 @@ module Transmogrifier
     end
 
     def raw
-      @array.map { |a| a.respond_to?(:raw) ? a.raw : a }
+      @array
     end
 
     private

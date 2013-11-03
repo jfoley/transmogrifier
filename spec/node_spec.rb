@@ -14,11 +14,6 @@ module Transmogrifier
       it "returns an array value" do
         Node.for(["value"]).should be_a(ArrayNode)
       end
-
-      it "accepts nodes" do
-        node = HashNode.new("key" => "value")
-        Node.for(node).should be_a(HashNode)
-      end
     end
   end
 
