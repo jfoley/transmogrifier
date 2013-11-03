@@ -50,7 +50,7 @@ module Transmogrifier
     end
 
     def delete(key)
-      Node.for(@hash.delete(key))
+      @hash.delete(key)
     end
 
     def append(hash)
@@ -82,7 +82,7 @@ module Transmogrifier
 
     def delete(key)
       node = find_nodes(key).first
-      Node.for(@array.delete(node))
+      @array.delete(node)
     end
 
     def append(node)

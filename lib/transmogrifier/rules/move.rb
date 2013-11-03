@@ -14,11 +14,11 @@ module Transmogrifier
           *to_keys, to_key = Selector.from_string(@to).keys
           to_parent = parent.find_all(to_keys).first
 
-          raw_deleted_object = parent.find_all(from_keys).first.delete(from_key).raw
+          deleted_object = parent.find_all(from_keys).first.delete(from_key)
           if to_child = to_parent.find_all([to_key]).first
-            to_child.append(raw_deleted_object)
+            to_child.append(deleted_object)
           else
-            to_parent.append({to_key => raw_deleted_object})
+            to_parent.append({to_key => deleted_object})
           end
         end
 

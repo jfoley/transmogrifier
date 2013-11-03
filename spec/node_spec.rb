@@ -100,7 +100,7 @@ module Transmogrifier
         hash = {"key" => "value", "extra_key" => "other_value"}
         node = HashNode.new(hash)
 
-        expect(node.delete("extra_key").raw).to eq("other_value")
+        expect(node.delete("extra_key")).to eq("other_value")
       end
     end
 
@@ -143,7 +143,7 @@ module Transmogrifier
       it "deletes the node from the array" do
         array = [{"name" => "object1"}, {"name" => "object2"}]
         node = ArrayNode.new(array)
-        expect(node.delete({"name" => "object1"}).raw).to eq({"name" => "object1"})
+        expect(node.delete({"name" => "object1"})).to eq({"name" => "object1"})
       end
     end
 
