@@ -86,7 +86,7 @@ module Transmogrifier
     end
 
     def append(node)
-      @array << Node.for(node).raw
+      @array << node
     end
 
     def raw
