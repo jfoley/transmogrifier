@@ -101,13 +101,9 @@ module Transmogrifier
       keys = keys.dup
       key = keys.shift
 
-      if key == "*"
-        nodes =  @array.map { |a| a.all(keys) }
-      else
-        nodes = find_nodes(key)
-        if keys.any? && nodes.any?
-          nodes = nodes.map { |x| x.all(keys) }
-        end
+      nodes = find_nodes(key)
+      if keys.any? && nodes.any?
+        nodes = nodes.map { |x| x.all(keys) }
       end
 
       nodes.flatten.compact
