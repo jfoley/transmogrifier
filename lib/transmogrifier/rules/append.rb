@@ -1,16 +1,16 @@
 module Transmogrifier
   module Rules
     class Append
-      def initialize(selector, hash)
-        @selector, @hash = selector, hash
+      def initialize(parent_selector, hash)
+        @parent_selector, @hash = parent_selector, hash
       end
 
       def apply!(input_hash)
         top = Node.for(input_hash)
-        keys = Selector.from_string(@selector).keys
-        nodes = top.find_all(keys)
+        parent_keys = Selector.from_string(@parent_selector).keys
 
-        nodes.each { |node| node.append(@hash) }
+        parents = top.find_all(parent_keys)
+        parents.each { |parent| parent.append(@hash) }
 
         top.raw
       end
