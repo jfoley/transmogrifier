@@ -74,21 +74,18 @@ module Transmogrifier
     end
 
     def delete(key)
-      node = find_nodes(key).first
-      @array.delete(node)
+      matching_nodes = find_nodes(key)
+      raise "Multiple nodes match #{key}, deletion criteria ambiguous" if matching_nodes.length > 1
+      @array.delete(matching_nodes.first)
     end
 
     def_delegator :@array, :<<, :append
     def_delegator :@array, :to_a, :raw
 
     private
+
     def find_nodes(attributes)
-      @array.select do |node|
-        attributes.all? do |k, v|
-          raw_node = node.respond_to?(:raw) ? node.raw : node
-          raw_node[k] == v
-        end
-      end
+      @array.select { |node| node.merge(attributes) == node }
     end
   end
 
