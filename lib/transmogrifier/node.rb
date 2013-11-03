@@ -29,6 +29,8 @@ module Transmogrifier
   end
 
   class HashNode < Node
+    extend Forwardable
+
     def initialize(hash)
       @hash = hash
     end
@@ -47,20 +49,14 @@ module Transmogrifier
       end
     end
 
-    def delete(key)
-      @hash.delete(key)
-    end
-
-    def append(hash)
-      @hash.merge!(hash)
-    end
-
-    def raw
-      @hash
-    end
+    def_delegator :@hash, :delete
+    def_delegator :@hash, :merge!, :append
+    def_delegator :@hash, :to_hash, :raw
   end
 
   class ArrayNode < Node
+    extend Forwardable
+
     def initialize(array)
       @array = array
     end
@@ -82,13 +78,8 @@ module Transmogrifier
       @array.delete(node)
     end
 
-    def append(node)
-      @array << node
-    end
-
-    def raw
-      @array
-    end
+    def_delegator :@array, :<<, :append
+    def_delegator :@array, :to_a, :raw
 
     private
     def find_nodes(attributes)
@@ -106,13 +97,13 @@ module Transmogrifier
       @value = value
     end
 
-    def raw
-      @value
-    end
-
     def find_all(keys)
       return [self] if keys.empty?
       raise "cannot find children of ValueNode satisfying non-empty selector #{keys}"
+    end
+
+    def raw
+      @value
     end
   end
 end
