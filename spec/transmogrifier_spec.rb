@@ -167,7 +167,7 @@ describe Transmogrifier::Engine do
         ]
       }}
 
-      before { engine.add_rule(:move, "list_of_things.*", "property", "nested.property") }
+      before { engine.add_rule(:move, "list_of_things.[]", "property", "nested.property") }
 
       it "moves the matched hash to the correct place" do
         output_hash = engine.run(input_hash)

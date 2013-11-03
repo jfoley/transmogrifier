@@ -53,23 +53,15 @@ module Transmogrifier
       keys = keys.dup
       key = keys.shift
 
-      if key == "*"
-        if keys.empty?
-          nodes = @children.values
-        else
-          nodes = @children.values.map { |a| a.all(keys) }
-        end
-      else
-        child = @children[key]
+      child = @children[key]
 
-        if keys.empty? || child.nil?
-          nodes = [child]
-        else
-          nodes = [child.all(keys)]
-        end
+      if keys.empty? || child.nil?
+        nodes = [child]
+      else
+        nodes = child.all(keys)
       end
 
-      nodes.flatten.compact
+      nodes.flatten
     end
 
 
@@ -109,13 +101,9 @@ module Transmogrifier
       keys = keys.dup
       key = keys.shift
 
-      if key == "*"
-        nodes =  @array.map { |a| a.all(keys) }
-      else
-        nodes = find_nodes(key)
-        if keys.any? && nodes.any?
-          nodes = nodes.map { |x| x.all(keys) }
-        end
+      nodes = find_nodes(key)
+      if keys.any? && nodes.any?
+        nodes = nodes.map { |x| x.all(keys) }
       end
 
       nodes.flatten.compact
