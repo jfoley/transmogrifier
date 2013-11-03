@@ -30,7 +30,6 @@ module Transmogrifier
 
   class HashNode < Node
     def initialize(hash)
-      raise unless hash.is_a?(Hash)
       @hash = hash
     end
 
@@ -63,7 +62,6 @@ module Transmogrifier
 
   class ArrayNode < Node
     def initialize(array)
-      raise unless array.is_a?(Array)
       @array = array
     end
 
@@ -105,7 +103,6 @@ module Transmogrifier
 
   class ValueNode < Node
     def initialize(value)
-      raise if value.is_a?(Hash) || value.is_a?(Array)
       @value = value
     end
 
