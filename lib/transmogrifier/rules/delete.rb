@@ -16,7 +16,7 @@ module Transmogrifier
           node.delete(child_key)
         end
 
-        top.as_hash
+        top.raw
       end
     end
   end

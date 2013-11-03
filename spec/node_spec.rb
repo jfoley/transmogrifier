@@ -23,10 +23,10 @@ module Transmogrifier
   end
 
   describe ValueNode do
-    describe "#as_hash" do
+    describe "#raw" do
       it "returns the passed in value" do
         node = ValueNode.new("hello")
-        expect(node.as_hash).to eq("hello")
+        expect(node.raw).to eq("hello")
       end
     end
 
@@ -48,10 +48,10 @@ module Transmogrifier
   end
 
   describe HashNode do
-    describe "#as_hash" do
+    describe "#raw" do
       it "returns the passed in hash" do
         node = HashNode.new({"key" => "value"})
-        expect(node.as_hash).to eq({"key" => "value"})
+        expect(node.raw).to eq({"key" => "value"})
       end
     end
 
@@ -59,17 +59,17 @@ module Transmogrifier
       it "returns the node itself when no keys are passed in" do
         hash = {"key1" => {"key2" => "value"}}
         node = HashNode.new(hash)
-        expect(node.find([]).as_hash).to eq(hash)
+        expect(node.find([]).raw).to eq(hash)
       end
 
       it "returns one level deep node" do
         node = HashNode.new({"key1" => {"key2" => "value"}})
-        expect(node.find(["key1"]).as_hash).to eq({"key2" => "value"})
+        expect(node.find(["key1"]).raw).to eq({"key2" => "value"})
       end
 
       it "returns nested nodes" do
         node = HashNode.new({"key1" => {"key2" => "value"}})
-        expect(node.find(["key1", "key2"]).as_hash).to eq("value")
+        expect(node.find(["key1", "key2"]).raw).to eq("value")
       end
 
       it "does something when the keys cant be found" do
@@ -82,13 +82,13 @@ module Transmogrifier
       it "returns wildcard matches" do
         node = HashNode.new({"key1" => "value"})
 
-        expect(node.all(["*"]).map(&:as_hash)).to eq(["value"])
+        expect(node.all(["*"]).map(&:raw)).to eq(["value"])
       end
 
       it "returns wildcard matches" do
         node = HashNode.new({"key1" => {"key2" => "value"}})
 
-        expect(node.all(["key1", "*"]).map(&:as_hash)).to eq(["value"])
+        expect(node.all(["key1", "*"]).map(&:raw)).to eq(["value"])
       end
     end
 
@@ -98,14 +98,14 @@ module Transmogrifier
         node = HashNode.new(hash)
         node.delete("extra_key")
 
-        expect(node.as_hash).to eq({"key" => "value"})
+        expect(node.raw).to eq({"key" => "value"})
       end
 
       it "returns the node that was deleted" do
         hash = {"key" => "value", "extra_key" => "other_value"}
         node = HashNode.new(hash)
 
-        expect(node.delete("extra_key").as_hash).to eq("other_value")
+        expect(node.delete("extra_key").raw).to eq("other_value")
       end
     end
 
@@ -114,17 +114,17 @@ module Transmogrifier
         hash = {"key" => "value"}
         node = HashNode.new(hash)
         node.append({ "extra_key" => "extra_value"})
-        expect(node.as_hash).to eq({"key" => "value", "extra_key" => "extra_value"})
+        expect(node.raw).to eq({"key" => "value", "extra_key" => "extra_value"})
       end
     end
   end
 
   describe ArrayNode do
-    describe "#as_hash" do
+    describe "#raw" do
       it "returns the underlying array" do
         array = [{"name" => "object1"}, {"name" => "object2"}]
         node = ArrayNode.new(array)
-        expect(node.as_hash).to eq(array)
+        expect(node.raw).to eq(array)
       end
     end
 
@@ -132,19 +132,19 @@ module Transmogrifier
       it "returns the node itself when no keys are passed in" do
         array = [{"name" => "object1"}, {"name" => "object2"}]
         node = ArrayNode.new(array)
-        expect(node.find([]).as_hash).to eq(array)
+        expect(node.find([]).raw).to eq(array)
       end
 
       it "returns the node" do
         array = [{"name" => "object1"}, {"name" => "object2"}]
         node = ArrayNode.new(array)
-        expect(node.find([{"name" => "object1"}]).as_hash).to eq({"name" => "object1"})
+        expect(node.find([{"name" => "object1"}]).raw).to eq({"name" => "object1"})
       end
 
       it "returns nested nodes" do
         array = [{"name" => "object1", "other_field" => [{"type" => "awesome"}]}]
         node = ArrayNode.new(array)
-        expect(node.find([{"name" => "object1"}, "other_field", {"type" => "awesome"}]).as_hash).to eq({"type" => "awesome"})
+        expect(node.find([{"name" => "object1"}, "other_field", {"type" => "awesome"}]).raw).to eq({"type" => "awesome"})
       end
 
       it "returns nil when the node can't be found" do
@@ -158,14 +158,14 @@ module Transmogrifier
         array = [{"name" => "object1", "nested" => {"key1" => "value1"}}, {"name" => "object2",  "nested" => {"key2" => "value2"}}]
         node = ArrayNode.new(array)
 
-        expect(node.all(["*", "nested"]).map(&:as_hash)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
+        expect(node.all(["*", "nested"]).map(&:raw)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
       end
 
       it "filters by attributes" do
         array = [{"type" => "object", "key1" => "value1"}, {"type" => "object", "key2" => "value2"}]
         node = ArrayNode.new(array)
 
-        expect(node.all([{"type" => "object"}]).map(&:as_hash)).to eq(array)
+        expect(node.all([{"type" => "object"}]).map(&:raw)).to eq(array)
       end
     end
 
@@ -173,7 +173,7 @@ module Transmogrifier
       it "deletes the node from the array" do
         array = [{"name" => "object1"}, {"name" => "object2"}]
         node = ArrayNode.new(array)
-        expect(node.delete({"name" => "object1"}).as_hash).to eq({"name" => "object1"})
+        expect(node.delete({"name" => "object1"}).raw).to eq({"name" => "object1"})
       end
     end
 
@@ -182,7 +182,7 @@ module Transmogrifier
         array = [{"name" => "object1"}]
         node = ArrayNode.new(array)
         node.append("name" => "object2")
-        expect(node.as_hash).to eq([{"name" => "object1"}, {"name" => "object2"}])
+        expect(node.raw).to eq([{"name" => "object1"}, {"name" => "object2"}])
       end
     end
   end

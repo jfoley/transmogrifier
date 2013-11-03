@@ -20,7 +20,7 @@ module Transmogrifier
       raise NotImplementedError
     end
 
-    def as_hash
+    def raw
       raise NotImplementedError
     end
 
@@ -83,10 +83,10 @@ module Transmogrifier
       end
     end
 
-    def as_hash
+    def raw
       hash = {}
       @children.each do |key, value|
-        hash[key] = value.as_hash
+        hash[key] = value.raw
       end
       hash
     end
@@ -130,15 +130,15 @@ module Transmogrifier
       @array << Node.for(node)
     end
 
-    def as_hash
-      @array.map(&:as_hash)
+    def raw
+      @array.map(&:raw)
     end
 
     private
     def find_nodes(attributes)
       @array.select do |node|
         attributes.all? do |k, v|
-          node.as_hash[k] == v
+          node.raw[k] == v
         end
       end
     end
@@ -150,7 +150,7 @@ module Transmogrifier
       @value = value
     end
 
-    def as_hash
+    def raw
       @value
     end
   end

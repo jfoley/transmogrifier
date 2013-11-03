@@ -26,13 +26,13 @@ module Transmogrifier
           if to_parent.nil?
             new_key = keys.pop
             to_parent = parent.find(keys)
-            to_parent.append({new_key => deleted_object.as_hash})
+            to_parent.append({new_key => deleted_object.raw})
           else
-            to_parent.append(deleted_object.as_hash)
+            to_parent.append(deleted_object.raw)
           end
         end
 
-        top.as_hash
+        top.raw
       end
     end
   end

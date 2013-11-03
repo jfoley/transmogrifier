@@ -14,7 +14,7 @@ module Transmogrifier
           node.append(@hash)
         end
 
-        top.as_hash
+        top.raw
       end
     end
   end
