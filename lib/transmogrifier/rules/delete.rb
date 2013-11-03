@@ -2,19 +2,16 @@ module Transmogrifier
   module Rules
     class Delete
       def initialize(parent_selector, selector_to_delete)
-        @parent = parent_selector
-        @to_delete = selector_to_delete
+        @parent_selector, @selector_to_delete = parent_selector, selector_to_delete
       end
 
       def apply!(input_hash)
         top = Node.for(input_hash)
-        keys = Selector.from_string(@parent).keys
+        keys = Selector.from_string(@parent_selector).keys
         nodes = top.all(keys)
-        child_key = Selector.from_string(@to_delete).key
+        child_key = Selector.from_string(@selector_to_delete).keys.first
 
-        nodes.each do |node|
-          node.delete(child_key)
-        end
+        nodes.each { |node| node.delete(child_key) }
 
         top.raw
       end
