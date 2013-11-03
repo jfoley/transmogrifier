@@ -16,10 +16,6 @@ module Transmogrifier
       raise NotImplementedError
     end
 
-    def find(keys)
-      raise NotImplementedError
-    end
-
     def raw
       raise NotImplementedError
     end
@@ -44,11 +40,7 @@ module Transmogrifier
       end
     end
 
-    def find(keys)
-      all(keys).first
-    end
-
-    def all(keys)
+    def find_all(keys)
       return [self] if keys.empty?
       keys = keys.dup
       key = keys.shift
@@ -57,7 +49,7 @@ module Transmogrifier
         if keys.empty?
           nodes = @children.values
         else
-          nodes = @children.values.map { |a| a.all(keys) }
+          nodes = @children.values.map { |a| a.find_all(keys) }
         end
       else
         child = @children[key]
@@ -65,7 +57,7 @@ module Transmogrifier
         if keys.empty? || child.nil?
           nodes = [child]
         else
-          nodes = [child.all(keys)]
+          nodes = [child.find_all(keys)]
         end
       end
 
@@ -100,21 +92,17 @@ module Transmogrifier
       end
     end
 
-    def find(keys)
-      all(keys).first
-    end
-
-    def all(keys)
+    def find_all(keys)
       return [self] if keys.empty?
       keys = keys.dup
       key = keys.shift
 
       if key == "*"
-        nodes =  @array.map { |a| a.all(keys) }
+        nodes =  @array.map { |a| a.find_all(keys) }
       else
         nodes = find_nodes(key)
         if keys.any? && nodes.any?
-          nodes = nodes.map { |x| x.all(keys) }
+          nodes = nodes.map { |x| x.find_all(keys) }
         end
       end
 

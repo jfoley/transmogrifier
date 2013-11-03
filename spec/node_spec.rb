@@ -55,40 +55,17 @@ module Transmogrifier
       end
     end
 
-    describe "#find" do
-      it "returns the node itself when no keys are passed in" do
-        hash = {"key1" => {"key2" => "value"}}
-        node = HashNode.new(hash)
-        expect(node.find([]).raw).to eq(hash)
-      end
-
-      it "returns one level deep node" do
-        node = HashNode.new({"key1" => {"key2" => "value"}})
-        expect(node.find(["key1"]).raw).to eq({"key2" => "value"})
-      end
-
-      it "returns nested nodes" do
-        node = HashNode.new({"key1" => {"key2" => "value"}})
-        expect(node.find(["key1", "key2"]).raw).to eq("value")
-      end
-
-      it "does something when the keys cant be found" do
-        node = HashNode.new({"key1" => {"key2" => "value"}})
-        expect(node.find(["not_there", "also_not_there"])).to eq(nil)
-      end
-    end
-
-    describe "#all" do
+    describe "#find_all" do
       it "returns wildcard matches" do
         node = HashNode.new({"key1" => "value"})
 
-        expect(node.all(["*"]).map(&:raw)).to eq(["value"])
+        expect(node.find_all(["*"]).map(&:raw)).to eq(["value"])
       end
 
       it "returns wildcard matches" do
         node = HashNode.new({"key1" => {"key2" => "value"}})
 
-        expect(node.all(["key1", "*"]).map(&:raw)).to eq(["value"])
+        expect(node.find_all(["key1", "*"]).map(&:raw)).to eq(["value"])
       end
     end
 
@@ -128,44 +105,19 @@ module Transmogrifier
       end
     end
 
-    describe "#find" do
-      it "returns the node itself when no keys are passed in" do
-        array = [{"name" => "object1"}, {"name" => "object2"}]
-        node = ArrayNode.new(array)
-        expect(node.find([]).raw).to eq(array)
-      end
-
-      it "returns the node" do
-        array = [{"name" => "object1"}, {"name" => "object2"}]
-        node = ArrayNode.new(array)
-        expect(node.find([{"name" => "object1"}]).raw).to eq({"name" => "object1"})
-      end
-
-      it "returns nested nodes" do
-        array = [{"name" => "object1", "other_field" => [{"type" => "awesome"}]}]
-        node = ArrayNode.new(array)
-        expect(node.find([{"name" => "object1"}, "other_field", {"type" => "awesome"}]).raw).to eq({"type" => "awesome"})
-      end
-
-      it "returns nil when the node can't be found" do
-        node = ArrayNode.new(["name" => "object"])
-        expect(node.find([{"name" => "not_there"}, "something"])).to eq(nil)
-      end
-    end
-
-    describe "#all" do
+    describe "#find_all" do
       it "returns wildcard matches" do
         array = [{"name" => "object1", "nested" => {"key1" => "value1"}}, {"name" => "object2",  "nested" => {"key2" => "value2"}}]
         node = ArrayNode.new(array)
 
-        expect(node.all(["*", "nested"]).map(&:raw)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
+        expect(node.find_all(["*", "nested"]).map(&:raw)).to eq([{"key1" => "value1"}, {"key2" => "value2"}])
       end
 
       it "filters by attributes" do
         array = [{"type" => "object", "key1" => "value1"}, {"type" => "object", "key2" => "value2"}]
         node = ArrayNode.new(array)
 
-        expect(node.all([{"type" => "object"}]).map(&:raw)).to eq(array)
+        expect(node.find_all([{"type" => "object"}]).map(&:raw)).to eq(array)
       end
     end
 
