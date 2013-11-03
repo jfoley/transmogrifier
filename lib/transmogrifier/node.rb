@@ -1,7 +1,6 @@
 module Transmogrifier
   class Node
     def self.for(obj)
-      return obj if obj.kind_of?(Node)
       case obj
         when Hash
           HashNode.new(obj)
@@ -16,11 +15,7 @@ module Transmogrifier
       raise NotImplementedError
     end
 
-    def find(keys)
-      raise NotImplementedError
-    end
-
-    def as_hash
+    def raw
       raise NotImplementedError
     end
 
@@ -34,111 +29,75 @@ module Transmogrifier
   end
 
   class HashNode < Node
+    extend Forwardable
+
     def initialize(hash)
-      raise unless hash.is_a?(Hash)
-
-      @children = {}
-
-      hash.each do |key, value|
-        @children[key] = Node.for(value)
-      end
+      @hash = hash
     end
 
-    def find(keys)
-      all(keys).first
-    end
+    def find_all(keys)
+      first_key, *remaining_keys = keys
 
-    def all(keys)
-      return [self] if keys.empty?
-      keys = keys.dup
-      key = keys.shift
-
-      child = @children[key]
-
-      if keys.empty? || child.nil?
-        nodes = [child]
+      if first_key.nil?
+        [self]
+      elsif child = @hash[first_key]
+        Node.for(child).find_all(remaining_keys)
       else
-        nodes = child.all(keys)
-      end
-
-      nodes.flatten
-    end
-
-
-    def delete(key)
-      @children.delete(key)
-    end
-
-    def append(hash)
-      hash.each do |key, value|
-        @children[key] = Node.for(value)
+        []
       end
     end
 
-    def as_hash
-      hash = {}
-      @children.each do |key, value|
-        hash[key] = value.as_hash
-      end
-      hash
-    end
+    def_delegator :@hash, :delete
+    def_delegator :@hash, :merge!, :append
+    def_delegator :@hash, :to_hash, :raw
   end
 
   class ArrayNode < Node
+    extend Forwardable
+
     def initialize(array)
-      raise unless array.is_a?(Array)
-      @array = array.map do |element|
-        Node.for(element)
-      end
+      @array = array
     end
 
-    def find(keys)
-      all(keys).first
-    end
+    def find_all(keys)
+      first_key, *remaining_keys = keys
 
-    def all(keys)
-      return [self] if keys.empty?
-      keys = keys.dup
-      key = keys.shift
-
-      nodes = find_nodes(key)
-      if keys.any? && nodes.any?
-        nodes = nodes.map { |x| x.all(keys) }
+      if first_key.nil?
+        [self]
+      elsif first_key == "*"
+        @array.flat_map { |a| Node.for(a).find_all(remaining_keys) }
+      else
+        find_nodes(first_key).flat_map { |x| Node.for(x).find_all(remaining_keys) }
       end
-
-      nodes.flatten.compact
     end
 
     def delete(key)
-      node = find_nodes(key).first
-      @array.delete(node)
+      matching_nodes = find_nodes(key)
+      raise "Multiple nodes match #{key}, deletion criteria ambiguous" if matching_nodes.length > 1
+      @array.delete(matching_nodes.first)
     end
 
-    def append(node)
-      @array << Node.for(node)
-    end
-
-    def as_hash
-      @array.map(&:as_hash)
-    end
+    def_delegator :@array, :<<, :append
+    def_delegator :@array, :to_a, :raw
 
     private
+
     def find_nodes(attributes)
-      @array.select do |node|
-        attributes.all? do |k, v|
-          node.as_hash[k] == v
-        end
-      end
+      @array.select { |node| node.merge(Hash[attributes]) == node }
     end
   end
 
   class ValueNode < Node
     def initialize(value)
-      raise if value.is_a?(Hash) || value.is_a?(Array)
       @value = value
     end
 
-    def as_hash
+    def find_all(keys)
+      return [self] if keys.empty?
+      raise "cannot find children of ValueNode satisfying non-empty selector #{keys}"
+    end
+
+    def raw
       @value
     end
   end

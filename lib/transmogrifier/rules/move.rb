@@ -2,37 +2,27 @@ module Transmogrifier
   module Rules
     class Move
       def initialize(parent_selector, from, to)
-        @parent = parent_selector
-        @from = from
-        @to = to
+        @parent_selector, @from, @to = parent_selector, from, to
       end
 
       def apply!(input_hash)
         top = Node.for(input_hash)
+        *from_keys, from_key = Selector.from_string(@from).keys
+        *to_keys, to_key = Selector.from_string(@to).keys
 
-        parents = top.all(Selector.new(@parent).keys)
-
+        parents = top.find_all(Selector.from_string(@parent_selector).keys)
         parents.each do |parent|
-          keys = Selector.new(@from).keys
-          from_key = keys.pop
+          to_parent = parent.find_all(to_keys).first
+          deleted_object = parent.find_all(from_keys).first.delete(from_key)
 
-          from_parent = parent.find(keys.dup)
-
-          deleted_object = from_parent.delete(from_key)
-
-          keys = Selector.new(@to).keys
-          to_parent = parent.find(keys.dup)
-
-          if to_parent.nil?
-            new_key = keys.pop
-            to_parent = parent.find(keys)
-            to_parent.append({new_key => deleted_object.as_hash})
+          if to_child = to_parent.find_all([to_key]).first
+            to_child.append(deleted_object)
           else
-            to_parent.append(deleted_object.as_hash)
+            to_parent.append({to_key => deleted_object})
           end
         end
 
-        top.as_hash
+        top.raw
       end
     end
   end

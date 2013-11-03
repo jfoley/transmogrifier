@@ -3,7 +3,8 @@
 Transmogrifier is a tool that allows you to decalaritively migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
 
 ## Usage
-### Appending a key
+### Available Rules
+#### Appending a key
 ```ruby
 input_hash = {"key" => "value"}
 transmogrifier = Transmogrifier::Engine.new
@@ -13,7 +14,7 @@ output_hash = transmogrifier.run(input_hash)
 # output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
 
-### Deleting  a key
+#### Deleting  a key
 ```ruby
 input_hash = {"key" => "value", "extra_key" => "some_value"}
 
@@ -24,7 +25,7 @@ output_hash = transmogrifier.run(input_hash)
 # output_hash => {"key" => "value"}
 ```
 
-### Moving a key
+#### Moving a key
 ```ruby
 input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
 
@@ -34,7 +35,8 @@ output_hash = transmogrifier.run(input_hash)
 
 # output_hash => {"nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
-#### Programmatically loading rules
+
+### Programmatically loading rules
 Rules can be specified in ruby code, but they can also be loaded with an array.
 ```ruby
 rules = [
@@ -77,7 +79,7 @@ output_hash = engine.run(input_hash)
 # }
 ```
 
-## Selectors
+### Selectors
 Selectors are a string of hash keys seperated by dots that tell the Engine where to apply a given rule. For example, given the following structure:
 ```ruby
 { 
