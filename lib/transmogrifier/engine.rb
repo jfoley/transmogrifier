@@ -11,8 +11,12 @@ module Transmogrifier
       )
     end
 
-    def initialize(rules)
+    def initialize(rules=[])
       @rules = rules
+    end
+
+    def add_rule(rule)
+      @rules << rule
     end
 
     def run(input_hash)
