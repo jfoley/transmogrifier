@@ -34,8 +34,50 @@ output_hash = transmogrifier.run(input_hash)
 
 # output_hash => {"nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
+#### Programmatically loading rules
+Rules can be specified in ruby code, but they can also be loaded with an array.
+```ruby
+rules = [
+  {
+    "type" => "append",
+    "selector" => "top",
+    "object" => {"some" => "attributes"},
+  },
 
-### Selectors
+  {
+    "type" => "move",
+    "selector" => "top",
+    "from" => "key1",
+    "to" => "key2",
+  },
+
+  {
+    "type" => "delete",
+    "selector" => "top",
+    "name" => "key3",
+  },
+]
+
+input_hash = {
+  "top" => {
+    "key1" => "value1",
+    "key3" => "value2",
+  },
+}
+
+engine = Transmogrifier.load_rules(rules)
+output_hash = engine.run(input_hash)
+
+# output_hash => 
+# { 
+#   "top" => {
+#     "some" => "attributes",
+#     "key2" => "value1",
+#   },
+# }
+```
+
+## Selectors
 Selectors are a string of hash keys seperated by dots that tell the Engine where to apply a given rule. For example, given the following structure:
 ```ruby
 { 
