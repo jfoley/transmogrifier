@@ -78,20 +78,6 @@ module Transmogrifier
       end
     end
 
-    describe "#all" do
-      it "returns wildcard matches" do
-        node = HashNode.new({"key1" => "value"})
-
-        expect(node.all(["*"]).map(&:as_hash)).to eq(["value"])
-      end
-
-      it "returns wildcard matches" do
-        node = HashNode.new({"key1" => {"key2" => "value"}})
-
-        expect(node.all(["key1", "*"]).map(&:as_hash)).to eq(["value"])
-      end
-    end
-
     describe "#delete" do
       it "deletes the given key" do
         hash = {"key" => "value", "extra_key" => "other_value"}
