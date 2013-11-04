@@ -6,31 +6,38 @@ Transmogrifier is a tool that allows you to decalaritively migrate a hash from o
 ### Available Rules
 #### Appending a key
 ```ruby
+engine = Transmogrifier::Engine.new
+append = Transmogrifier::Rules::Append.new("", "new_key", "new_value")
+
+engine.add_rule(append)
+
 input_hash = {"key" => "value"}
-transmogrifier = Transmogrifier::Engine.new
-transmogrifier.add_rule(:append, "", "new_key", "new_value")
-output_hash = transmogrifier.run(input_hash)
+output_hash = engine.run(input_hash)
 
 # output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
 
 #### Deleting  a key
 ```ruby
-input_hash = {"key" => "value", "extra_key" => "some_value"}
+engine = Transmogrifier::Engine.new
+delete = Transmogrifier::Rules::Delete("", "extra_key")
 
-transmogrifier = Transmogrifier::Engine.new
-transmogrifier.add_rule(:delete, "", "extra_key")
-output_hash = transmogrifier.run(input_hash)
+engine.add_rule(delete)
+
+input_hash = {"key" => "value", "extra_key" => "some_value"}
+output_hash = engine.run(input_hash)
 
 # output_hash => {"key" => "value"}
 ```
 
 #### Moving a key
 ```ruby
-input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
+engine = Transmogrifier::Engine.new
+move = Transmogrifier::Rules::Move.new("", "key", "nested")
 
-transmogrifier = Transmogrifier::Engine.new
-transmogrifier.add_rule(:move, "", "key", "nested")
+engine.add_rule(:move, "", "key", "nested")
+
+input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
 output_hash = transmogrifier.run(input_hash)
 
 # output_hash => {"nested" => {"nested_key" => "nested_value", "key" => "value"}}
@@ -60,14 +67,15 @@ rules = [
   },
 ]
 
+engine = Transmogrifier::Engine.from_rules_array(rules)
+
+
 input_hash = {
   "top" => {
     "key1" => "value1",
     "key3" => "value2",
   },
 }
-
-engine = Transmogrifier.load_rules(rules)
 output_hash = engine.run(input_hash)
 
 # output_hash => 
