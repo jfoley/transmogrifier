@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Transmogrifier::VERSION
   spec.authors       = ["John Foley"]
   spec.email         = ["john@hisfoleyness.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{A tool for manipulating schemas}
+  spec.summary       = %q{A tool for manipulating schemas}
+  spec.homepage      = "http://github.com/jfoley/transmogrifier"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
