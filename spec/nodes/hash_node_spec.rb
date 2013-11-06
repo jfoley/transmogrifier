@@ -12,28 +12,49 @@ module Transmogrifier
     describe "#find_all" do
       context "given an empty set of selector keys" do
         it "returns itself in an array" do
-          hash = {"key" => "value", "extra_key" => "other_value"}
+          hash = {
+            "key" => "value",
+            "extra_key" => "other_value",
+          }
           node = HashNode.new(hash)
 
-          expect(node.find_all([]).map(&:raw)).to eq([{"key" => "value", "extra_key" => "other_value"}])
+          expect(node.find_all([]).map(&:raw)).to eq([{
+            "key" => "value",
+            "extra_key" => "other_value",
+          }])
         end
       end
 
       context "given multiple selector keys" do
-        let(:keys) { ["key", ["k", "v"]] }
+        let(:keys) { ["key", [["k", "v"]]] }
 
         context "when the first key is a key in the hash" do
-          let(:hash) { {"key" => [{"k" => "v", "a" => "b"}, {"k" => "not_v", "c" => "d"}, {"k" => "v", "e" => "f"}]} }
+          let(:hash) {{
+            "key" => [
+              {"k" => "v", "a" => "b"},
+              {"k" => "not_v", "c" => "d"},
+              {"k" => "v", "e" => "f"},
+            ]
+          }}
 
           it "finds all children of the first key's value satisfying the remaining selector keys" do
             node = HashNode.new(hash)
 
-            expect(node.find_all(keys).map(&:raw)).to eq([{"k" => "v", "a" => "b"}, {"k" => "v", "e" => "f"}])
+            expect(node.find_all(keys).map(&:raw)).to eq([
+              {"k" => "v", "a" => "b"},
+              {"k" => "v", "e" => "f"}
+            ])
           end
         end
 
         context "when the first key is not a key in the hash" do
-          let(:hash) { {"not_key" => [{"k" => "v", "a" => "b"}, {"k" => "not_v", "c" => "d"}, {"k" => "v", "e" => "f"}]} }
+          let(:hash) {{
+            "not_key" => [
+              {"k" => "v", "a" => "b"},
+              {"k" => "not_v", "c" => "d"},
+              {"k" => "v", "e" => "f"}
+            ]
+          }}
 
           it "returns an empty array" do
             node = HashNode.new(hash)

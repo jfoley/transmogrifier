@@ -13,8 +13,6 @@ module Transmogrifier
 
       if first_key.nil?
         [self]
-      elsif first_key == "*"
-        @array.flat_map { |a| Node.for(a).find_all(remaining_keys) }
       else
         find_nodes(first_key).flat_map { |x| Node.for(x).find_all(remaining_keys) }
       end
@@ -32,7 +30,7 @@ module Transmogrifier
     private
 
     def find_nodes(attributes)
-      @array.select { |node| node.merge(Hash[*attributes]) == node }
+      @array.select { |node| node.merge(Hash[attributes]) == node }
     end
   end
 end
