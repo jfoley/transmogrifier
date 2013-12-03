@@ -35,6 +35,37 @@ module Transmogrifier
       end
     end
 
+    describe "#clone" do
+      context "when one node matches the criteria" do
+        it "returns the node from the array" do
+          value = {"name" => "object1"}
+          array = [value, {"name" => "object2"}]
+          node = ArrayNode.new(array)
+          expect(node.clone([["name", "object1"]])).to eq(value)
+          expect(node.clone([["name", "object1"]])).to_not be(value)
+        end
+      end
+
+      context "when more than one node matches the criteria" do
+        it "raises an error" do
+          array = [{"name" => "object1", "common_key" => "common_value"}, {"name" => "object2", "common_key" => "common_value"}]
+          node = ArrayNode.new(array)
+          expect {
+            node.clone([["common_key", "common_value"]])
+          }.to raise_error
+        end
+      end
+
+      context "when no nodes match the criteria" do
+        it "returns nil" do
+          array = [{"name" => "object1"}, {"name" => "object2"}]
+          node = ArrayNode.new(array)
+          expect(node.clone([["name", "not_present"]])).to be_nil
+        end
+      end
+    end
+
+
     describe "#delete" do
       context "when one node matches the criteria" do
         it "deletes the node from the array" do

@@ -24,6 +24,13 @@ describe Transmogrifier::Engine do
             "type" => "delete",
             "selector" => "top",
             "name" => "key3"
+          },
+
+          {
+            "type" => "copy",
+            "selector" => "top",
+            "from" => "key4",
+            "to" => "key5",
           }
         ]
       end
@@ -32,7 +39,8 @@ describe Transmogrifier::Engine do
         input_hash = {
           "top" => {
             "key1" => "value1",
-            "key3" => "value2"
+            "key3" => "value2",
+            "key4" => "value3",
           }
         }
     
@@ -40,6 +48,8 @@ describe Transmogrifier::Engine do
           "top" => {
             "some" => "attributes",
             "key2" => "value1",
+            "key4" => "value3",
+            "key5" => "value3",
           }
         })
       end
@@ -70,6 +80,100 @@ describe Transmogrifier::Engine do
             expect(engine.run(input_hash)).to eq({
               "key" => "value",
               "array" => [{"new_key" => "new_value"}],
+            })
+          end
+        end
+      end
+
+      describe "copying keys" do
+        let(:input_hash) do
+          {
+            "key" => "value",
+            "array" => [{"inside" => "value"}],
+            "nested" => { "key" => "value" },
+          }
+        end
+
+        context "when the selector finds a HashNode" do
+          context "when the target key exists" do
+            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside=value]", "to" => "nested"}]}
+
+            it "copies the hash to the to selector" do
+              expect(engine.run(input_hash)).to eq({
+                "key" => "value",
+                "array" => [{"inside" => "value"}],
+                "nested" => {
+                  "key" => "value",
+                  "inside" => "value",
+                },
+              })
+            end
+          end
+
+          context "when the target key doesn't exist" do
+            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside=value]", "to" => "nested.nested_again"} ] }
+
+            it "copies the hash to a new child" do
+              expect(engine.run(input_hash)).to eq({
+                 "key" => "value",
+                 "array" => [{"inside" => "value"}],
+                 "nested" => {
+                   "key" => "value",
+                   "nested_again" => { "inside" => "value" }
+                 },
+              })
+            end
+          end
+
+          context "when the from selector has a wildcard" do
+            let(:input_hash) do
+              {
+                "list_of_things" => [
+                  {
+                    "name" => "object1",
+                    "property" => "property1",
+                    "nested" => {}
+                  },
+                  {
+                    "name" => "object2",
+                    "property" => "property2",
+                    "nested" => {}
+                  },
+                ]
+              }
+            end
+            let(:rules) { [ {"type" => "copy", "selector" => "list_of_things.[]", "from" => "property", "to" => "nested.property"} ] }
+
+            it "copies the matched hash to the correct place" do
+              expect(engine.run(input_hash)).to eq({
+                "list_of_things" => [
+                  {
+                   "name" => "object1",
+                   "property" => "property1",
+                   "nested" => { "property" => "property1" },
+                  },
+                  {
+                   "name" => "object2",
+                   "property" => "property2",
+                   "nested" => { "property" => "property2" },
+                  },
+                ]
+              })
+            end
+          end
+        end
+
+        context "when the selector finds an ArrayNode" do
+          let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array", "to" => "nested.array"} ] }
+
+          it "copies the array to the to selector" do
+            expect(engine.run(input_hash)).to eq({
+              "key" => "value",
+              "array" => [{"inside" => "value"}],
+              "nested" => {
+                "key" => "value",
+                "array" => [{"inside" => "value"}],
+              },
             })
           end
         end
