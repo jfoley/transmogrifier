@@ -27,6 +27,14 @@ module Transmogrifier
       end
     end
 
+    describe "#clone" do
+      it "raises a NotImplementedError" do
+        expect {
+          ValueNode.new("hello").clone("key")
+        }.to raise_error(NotImplementedError)
+      end
+    end
+
     describe "#delete" do
       it "raises a NotImplementedError" do
         expect {

@@ -65,6 +65,18 @@ module Transmogrifier
       end
     end
 
+    describe "#clone" do
+      it "returns a copy of value" do
+        value = "other_value"
+        hash = {"key" => "value", "extra_key" => value}
+        node = HashNode.new(hash)
+
+        expect(node.clone("extra_key")).to eql(value)
+        expect(node.clone("extra_key")).to_not be(value)
+        expect(node.raw).to eq({"key" => "value", "extra_key" => "other_value"})
+      end
+    end
+
     describe "#delete" do
       it "deletes the given key" do
         hash = {"key" => "value", "extra_key" => "other_value"}
