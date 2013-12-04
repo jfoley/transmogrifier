@@ -96,7 +96,7 @@ describe Transmogrifier::Engine do
 
         context "when the selector finds a HashNode" do
           context "when the target key exists" do
-            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside=value]", "to" => "nested"}]}
+            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside==value]", "to" => "nested"}]}
 
             it "copies the hash to the to selector" do
               expect(engine.run(input_hash)).to eq({
@@ -111,7 +111,7 @@ describe Transmogrifier::Engine do
           end
 
           context "when the target key doesn't exist" do
-            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside=value]", "to" => "nested.nested_again"} ] }
+            let(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside==value]", "to" => "nested.nested_again"} ] }
 
             it "copies the hash to a new child" do
               expect(engine.run(input_hash)).to eq({
@@ -202,7 +202,7 @@ describe Transmogrifier::Engine do
         end
 
         context "when the selector finds an ArrayNode" do
-          let(:rules) { [ {"type" => "delete", "selector" => "array", "name" => "[inside=value]"} ] }
+          let(:rules) { [ {"type" => "delete", "selector" => "array", "name" => "[inside==value]"} ] }
           
           it "deletes the array from the parent" do
             expect(engine.run(input_hash)).to eq({
@@ -229,7 +229,7 @@ describe Transmogrifier::Engine do
 
         context "when the selector finds a HashNode" do
           context "when the target key exists" do
-            let(:rules) { [ {"type" => "move", "selector" => "", "from" => "array.[inside=value]", "to" => "nested"}]}
+            let(:rules) { [ {"type" => "move", "selector" => "", "from" => "array.[inside==value]", "to" => "nested"}]}
             
             it "moves the hash to the to selector" do
               expect(engine.run(input_hash)).to eq({
@@ -244,7 +244,7 @@ describe Transmogrifier::Engine do
           end
 
           context "when the target key doesn't exist" do
-            let(:rules) { [ {"type" => "move", "selector" => "", "from" => "array.[inside=value]", "to" => "nested.nested_again"} ] }
+            let(:rules) { [ {"type" => "move", "selector" => "", "from" => "array.[inside==value]", "to" => "nested.nested_again"} ] }
             
             it "moves the hash to a new child" do
               expect(engine.run(input_hash)).to eq({

@@ -38,7 +38,20 @@ module Transmogrifier
     private
 
     def find_nodes(attributes)
-      @array.select { |node| node.merge(Hash[attributes]) == node }
+      return @array if attributes.empty?
+
+      filtered = @array.clone
+      attributes.each do |attr|
+        case attr[0]
+          when "=="
+            filtered.select! { |node| node.merge(Hash[*attr[1..-1]]) == node }
+          when "!="
+            filtered.reject! { |node| node.merge(Hash[*attr[1..-1]]) == node }
+          else
+            raise "Unsupported attribute filter #{attr.inspect}"
+        end
+      end
+      filtered
     end
   end
 end
