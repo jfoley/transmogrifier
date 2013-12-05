@@ -35,4 +35,20 @@ describe Transmogrifier::Rules::Delete do
       })
     end
   end
+
+  context "when the selector matches multiple nodes" do
+    subject(:delete) { described_class.new("array", "[inside==value]") }
+
+    before { input_hash["array"] << {"inside" => "value"} }
+
+    it "deletes all entries from the array" do
+      expect(delete.apply!(input_hash)).to eq({
+        "key" => "value",
+        "array" => [],
+        "nested" => {
+          "key" => "value"
+        },
+      })
+    end
+  end
 end

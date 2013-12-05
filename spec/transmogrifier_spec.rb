@@ -204,7 +204,23 @@ describe Transmogrifier::Engine do
         context "when the selector finds an ArrayNode" do
           let(:rules) { [ {"type" => "delete", "selector" => "array", "name" => "[inside==value]"} ] }
           
-          it "deletes the array from the parent" do
+          it "deletes matching item from array" do
+            expect(engine.run(input_hash)).to eq({
+              "key" => "value",
+              "array" => [],
+              "nested" => {
+                "key" => "value"
+              },
+            })
+          end
+        end
+
+        context "when the selector matches multiple nodes" do
+          let(:rules) { [ {"type" => "delete", "selector" => "array", "name" => "[inside==value]"} ] }
+
+          before { input_hash["array"] << {"inside" => "value"} }
+
+          it "deletes all entries from the array" do
             expect(engine.run(input_hash)).to eq({
               "key" => "value",
               "array" => [],
@@ -305,6 +321,23 @@ describe Transmogrifier::Engine do
               "nested" => {
                 "key" => "value",
                 "array" => [{"inside" => "value"}],
+              },
+            })
+          end
+        end
+
+        context "when the selector finds multiple nodes" do
+          let(:rules) { [ {"type" => "move", "selector" => "", "from" => "array.[inside==value]", "to" => "nested.array"} ] }
+
+          before { input_hash["array"] << {"inside" => "value"} }
+
+          it "moves them all as an array to the selector" do
+            expect(engine.run(input_hash)).to eq({
+              "key" => "value",
+              "array" => [],
+              "nested" => {
+                "key" => "value",
+                "array" => [{"inside" => "value"},{"inside" => "value"}],
               },
             })
           end

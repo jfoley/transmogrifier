@@ -28,8 +28,8 @@ module Transmogrifier
 
     def delete(key)
       matching_nodes = find_nodes(key)
-      raise "Multiple nodes match #{key}, deletion criteria ambiguous" if matching_nodes.length > 1
-      @array.delete(matching_nodes.first)
+      deleted_nodes = matching_nodes.each { |n| @array.delete(n) }
+      deleted_nodes.length > 1 ? deleted_nodes : deleted_nodes.first
     end
 
     def_delegator :@array, :<<, :append

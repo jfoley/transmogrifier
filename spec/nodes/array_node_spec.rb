@@ -113,15 +113,13 @@ module Transmogrifier
       end
 
       context "when more than one node matches the criteria" do
-        it "raises an error" do
+        it "deletes all matching nodes from array" do
           array = [
             {"name" => "object1", "common_key" => "common_value"},
             {"name" => "object2", "common_key" => "common_value"},
           ]
-          node = ArrayNode.new(array)
-          expect {
-            node.delete([["common_key", "common_value"]])
-          }.to raise_error
+          node = ArrayNode.new(array.clone)
+          expect(node.delete([["==", "common_key", "common_value"]])).to eq(array)
         end
       end
 

@@ -94,6 +94,23 @@ describe Transmogrifier::Rules::Move do
     end
   end
 
+  context "when the selector finds multiple nodes" do
+    subject(:move) { described_class.new("", "array.[inside==value]", "nested.array") }
+
+    before { input_hash["array"] << {"inside" => "value"} }
+
+    it "moves them all as an array to the selector" do
+      expect(move.apply!(input_hash)).to eq({
+        "key" => "value",
+        "array" => [],
+        "nested" => {
+          "key" => "value",
+          "array" => [{"inside" => "value"},{"inside" => "value"}],
+        },
+      })
+    end
+  end
+
   context "using move as a rename" do
     subject(:rename) { described_class.new("", "array", "new_array") }
 
