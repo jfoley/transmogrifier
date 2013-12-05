@@ -143,5 +143,13 @@ module Transmogrifier
         expect(node.raw).to eq([{"name" => "object1"}, {"name" => "object2"}])
       end
     end
+
+    describe "#modify" do
+      it "raises a NotImplementedError" do
+        expect {
+          ArrayNode.new("hello").modify("value", "value2")
+        }.to raise_error(NotImplementedError)
+      end
+    end
   end
 end

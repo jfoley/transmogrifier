@@ -30,5 +30,9 @@ module Transmogrifier
     def append(node)
       raise NotImplementedError
     end
+
+    def modify(pattern, replacement)
+      raise NotImplementedError
+    end
   end
 end

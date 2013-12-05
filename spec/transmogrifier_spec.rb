@@ -31,7 +31,14 @@ describe Transmogrifier::Engine do
             "selector" => "top",
             "from" => "key4",
             "to" => "key5",
-          }
+          },
+
+          {
+            "type" => "modify",
+            "selector" => "top.key5",
+            "pattern" => "\\d+",
+            "replacement" => ".num",
+          },
         ]
       end
 
@@ -40,7 +47,7 @@ describe Transmogrifier::Engine do
           "top" => {
             "key1" => "value1",
             "key3" => "value2",
-            "key4" => "value3",
+            "key4" => "value4",
           }
         }
     
@@ -48,8 +55,8 @@ describe Transmogrifier::Engine do
           "top" => {
             "some" => "attributes",
             "key2" => "value1",
-            "key4" => "value3",
-            "key5" => "value3",
+            "key4" => "value4",
+            "key5" => "value.num",
           }
         })
       end
@@ -354,6 +361,39 @@ describe Transmogrifier::Engine do
                 "key" => "value",
               },
             })
+          end
+        end
+      end
+
+      describe "modifying value" do
+        let(:input_hash) do
+          { "key" => "value", "array" => [] }
+        end
+
+        context "when the selector finds a ValueNode" do
+          let(:rules) { [ {"type" => "modify", "selector" => "key", "pattern" => "al", "replacement" => "og"} ] }
+
+          it "modifies the value" do
+            expect(engine.run(input_hash)).to eq({
+              "key" => "vogue",
+              "array" => [],
+            })
+          end
+        end
+
+        context "when the selector finds a HashNode" do
+          let(:rules) { [ {"type" => "modify", "selector" => "", "pattern" => "al", "replacement" => "og"} ] }
+
+          it "appends to the hash" do
+            expect{engine.run(input_hash)}.to raise_error(NotImplementedError)
+          end
+        end
+
+        context "when the selector finds an ArrayNode" do
+          let(:rules) { [ {"type" => "modify", "selector" => "array", "pattern" => "al", "replacement" => "og"} ] }
+
+          it "appends to the array" do
+            expect{engine.run(input_hash)}.to raise_error(NotImplementedError)
           end
         end
       end

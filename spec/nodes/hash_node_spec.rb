@@ -102,5 +102,13 @@ module Transmogrifier
         expect(node.raw).to eq({"key" => "value", "extra_key" => "extra_value"})
       end
     end
+
+    describe "#modify" do
+      it "raises a NotImplementedError" do
+        expect {
+          HashNode.new("hello").modify("value", "value2")
+        }.to raise_error(NotImplementedError)
+      end
+    end
   end
 end
