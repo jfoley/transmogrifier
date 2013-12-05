@@ -26,7 +26,7 @@ module Transmogrifier
       end
 
       context "given multiple selector keys" do
-        let(:keys) { ["key", [["k", "v"]]] }
+        let(:keys) { ["key", [["==", "k", "v"]]] }
 
         context "when the first key is a key in the hash" do
           let(:hash) {{
