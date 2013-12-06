@@ -73,7 +73,7 @@ module Transmogrifier
 
         expect(node.clone("extra_key")).to eql(value)
         expect(node.clone("extra_key")).to_not be(value)
-        expect(node.raw).to eq({"key" => "value", "extra_key" => "other_value"})
+        expect(node.raw).to eq("key" => "value", "extra_key" => "other_value")
       end
     end
 

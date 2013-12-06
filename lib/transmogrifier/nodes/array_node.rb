@@ -25,7 +25,6 @@ module Transmogrifier
       Marshal.load(Marshal.dump(matching_nodes.first))
     end
 
-
     def delete(key)
       matching_nodes = find_nodes(key)
       deleted_nodes = matching_nodes.each { |n| @array.delete(n) }

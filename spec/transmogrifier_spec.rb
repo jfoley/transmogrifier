@@ -12,27 +12,23 @@ describe Transmogrifier::Engine do
             "selector" => "top",
             "object" => {"some" => "attributes"}
           },
-
           {
             "type" => "move",
             "selector" => "top",
             "from" => "key1",
             "to" => "key2",
           },
-
           {
             "type" => "delete",
             "selector" => "top",
             "name" => "key3"
           },
-
           {
             "type" => "copy",
             "selector" => "top",
             "from" => "key4",
             "to" => "key5",
           },
-
           {
             "type" => "modify",
             "selector" => "top.key5",

@@ -99,7 +99,6 @@ module Transmogrifier
       end
     end
 
-
     describe "#delete" do
       context "when one node matches the criteria" do
         it "deletes the node from the array" do
