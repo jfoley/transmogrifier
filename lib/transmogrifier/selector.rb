@@ -1,7 +1,7 @@
 module Transmogrifier
   class Selector
     FILTER_REGEX = /\[(.*)\]/
-    OPERATORS = ["!=", "=="]
+    OPERATORS = ["!=", "="]
 
     def self.from_string(string)
       new(

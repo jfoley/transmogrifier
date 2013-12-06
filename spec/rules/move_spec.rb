@@ -13,7 +13,7 @@ describe Transmogrifier::Rules::Move do
 
   context "when the selector finds a HashNode" do
     context "when the target key exists" do
-      subject(:move) { described_class.new("", "array.[inside==value]", "nested") }
+      subject(:move) { described_class.new("", "array.[inside=value]", "nested") }
       
       it "moves the hash to the to selector" do
         expect(move.apply!(input_hash)).to eq({
@@ -28,7 +28,7 @@ describe Transmogrifier::Rules::Move do
     end
 
     context "when the target key doesn't exist" do
-      subject(:move) { described_class.new("", "array.[inside==value]", "nested.nested_again") }
+      subject(:move) { described_class.new("", "array.[inside=value]", "nested.nested_again") }
 
       it "moves the hash to a new child" do
         expect(move.apply!(input_hash)).to eq({
@@ -95,7 +95,7 @@ describe Transmogrifier::Rules::Move do
   end
 
   context "when the selector finds multiple nodes" do
-    subject(:move) { described_class.new("", "array.[inside==value]", "nested.array") }
+    subject(:move) { described_class.new("", "array.[inside=value]", "nested.array") }
 
     before { input_hash["array"] << {"inside" => "value"} }
 

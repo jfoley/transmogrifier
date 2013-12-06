@@ -42,7 +42,7 @@ module Transmogrifier
       filtered = @array.clone
       attributes.each do |attr|
         case attr[0]
-          when "=="
+          when "="
             filtered.select! { |node| node.merge(Hash[*attr[1..-1]]) == node }
           when "!="
             filtered.reject! { |node| node.merge(Hash[*attr[1..-1]]) == node }

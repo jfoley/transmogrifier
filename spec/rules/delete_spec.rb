@@ -23,7 +23,7 @@ describe Transmogrifier::Rules::Delete do
   end
 
   context "when the selector finds an ArrayNode" do
-    subject(:delete) { described_class.new("array", "[inside==value]") }
+    subject(:delete) { described_class.new("array", "[inside=value]") }
     
     it "deletes the array from the parent" do
       expect(delete.apply!(input_hash)).to eq({
@@ -37,7 +37,7 @@ describe Transmogrifier::Rules::Delete do
   end
 
   context "when the selector matches multiple nodes" do
-    subject(:delete) { described_class.new("array", "[inside==value]") }
+    subject(:delete) { described_class.new("array", "[inside=value]") }
 
     before { input_hash["array"] << {"inside" => "value"} }
 

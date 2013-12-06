@@ -13,7 +13,7 @@ describe Transmogrifier::Rules::Copy do
 
   context "when the selector finds a HashNode" do
     context "when the target key exists" do
-      subject(:copy) { described_class.new("", "array.[inside==value]", "nested") }
+      subject(:copy) { described_class.new("", "array.[inside=value]", "nested") }
       
       it "moves the hash to the to selector" do
         expect(copy.apply!(input_hash)).to eq({
@@ -28,7 +28,7 @@ describe Transmogrifier::Rules::Copy do
     end
 
     context "when the target key doesn't exist" do
-      subject(:copy) { described_class.new("", "array.[inside==value]", "nested.nested_again") }
+      subject(:copy) { described_class.new("", "array.[inside=value]", "nested.nested_again") }
 
       it "moves the hash to a new child" do
         expect(copy.apply!(input_hash)).to eq({
