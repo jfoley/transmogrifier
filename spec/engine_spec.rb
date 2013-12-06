@@ -23,6 +23,20 @@ describe Transmogrifier::Engine do
           "type" => "delete",
           "selector" => "top",
           "name" => "key3"
+        },
+
+        {
+          "type" => "copy",
+          "selector" => "top",
+          "from" => "key4",
+          "to" => "key5",
+        },
+
+        {
+          "type" => "modify",
+          "selector" => "top.key5",
+          "pattern" => "\\d+",
+          "replacement" => ".num",
         }
       ]
     end
@@ -31,7 +45,8 @@ describe Transmogrifier::Engine do
       input_hash = {
         "top" => {
           "key1" => "value1",
-          "key3" => "value2"
+          "key3" => "value2",
+          "key4" => "value4",
         }
       }
   
@@ -39,6 +54,8 @@ describe Transmogrifier::Engine do
         "top" => {
           "some" => "attributes",
           "key2" => "value1",
+          "key4" => "value4",
+          "key5" => "value.num",
         }
       })
     end

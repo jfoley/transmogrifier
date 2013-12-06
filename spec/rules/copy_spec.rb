@@ -1,6 +1,6 @@
 require "transmogrifier"
 
-describe Transmogrifier::Rules::Move do
+describe Transmogrifier::Rules::Copy do
   let(:input_hash) do
     {
       "key" => "value",
@@ -13,12 +13,12 @@ describe Transmogrifier::Rules::Move do
 
   context "when the selector finds a HashNode" do
     context "when the target key exists" do
-      subject(:move) { described_class.new("", "array.[inside=value]", "nested") }
+      subject(:copy) { described_class.new("", "array.[inside=value]", "nested") }
       
       it "moves the hash to the to selector" do
-        expect(move.apply!(input_hash)).to eq({
+        expect(copy.apply!(input_hash)).to eq({
           "key" => "value",
-          "array" => [],
+          "array" => [{"inside" => "value"}],
           "nested" => {
             "key" => "value",
             "inside" => "value",
@@ -28,12 +28,12 @@ describe Transmogrifier::Rules::Move do
     end
 
     context "when the target key doesn't exist" do
-      subject(:move) { described_class.new("", "array.[inside=value]", "nested.nested_again") }
+      subject(:copy) { described_class.new("", "array.[inside=value]", "nested.nested_again") }
 
       it "moves the hash to a new child" do
-        expect(move.apply!(input_hash)).to eq({
+        expect(copy.apply!(input_hash)).to eq({
           "key" => "value",
-          "array" => [],
+          "array" => [{"inside" => "value"}],
           "nested" => {
             "key" => "value",
             "nested_again" => {
@@ -61,17 +61,19 @@ describe Transmogrifier::Rules::Move do
           ]
         }
       end
-      subject(:move) { described_class.new("list_of_things.[]", "property", "nested.property") }
+      subject(:copy) { described_class.new("list_of_things.[]", "property", "nested.property") }
 
       it "moves the matched hash to the correct place" do
-        expect(move.apply!(input_hash)).to eq({
+        expect(copy.apply!(input_hash)).to eq({
           "list_of_things" => [
             {
               "name" => "object1",
+              "property" => "property1",
               "nested" => { "property" => "property1" }
             },
             {
               "name" => "object2",
+              "property" => "property2",
               "nested" => { "property" => "property2" }
             },
           ]
@@ -81,45 +83,15 @@ describe Transmogrifier::Rules::Move do
   end
 
   context "when the selector finds an ArrayNode" do
-    subject(:move) { described_class.new("", "array", "nested.array") }
+    subject(:copy) { described_class.new("", "array", "nested.array") }
 
     it "moves the array to the to selector" do
-      expect(move.apply!(input_hash)).to eq({
+      expect(copy.apply!(input_hash)).to eq({
         "key" => "value",
+        "array" => [{"inside" => "value"}],
         "nested" => {
           "key" => "value",
           "array" => [{"inside" => "value"}],
-        },
-      })
-    end
-  end
-
-  context "when the selector finds multiple nodes" do
-    subject(:move) { described_class.new("", "array.[inside=value]", "nested.array") }
-
-    before { input_hash["array"] << {"inside" => "value"} }
-
-    it "moves them all as an array to the selector" do
-      expect(move.apply!(input_hash)).to eq({
-        "key" => "value",
-        "array" => [],
-        "nested" => {
-          "key" => "value",
-          "array" => [{"inside" => "value"},{"inside" => "value"}],
-        },
-      })
-    end
-  end
-
-  context "using move as a rename" do
-    subject(:rename) { described_class.new("", "array", "new_array") }
-
-    it "renames the node" do
-      expect(rename.apply!(input_hash)).to eq({
-        "key" => "value",
-        "new_array" => [{"inside" => "value"}],
-        "nested" => {
-          "key" => "value",
         },
       })
     end

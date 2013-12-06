@@ -19,11 +19,19 @@ module Transmogrifier
       raise NotImplementedError
     end
 
+    def clone(key_or_name)
+      raise NotImplementedError
+    end
+
     def delete(key_or_name)
       raise NotImplementedError
     end
 
     def append(node)
+      raise NotImplementedError
+    end
+
+    def modify(pattern, replacement)
       raise NotImplementedError
     end
   end

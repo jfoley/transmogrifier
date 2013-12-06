@@ -17,6 +17,19 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
 
+#### Copying a key
+```ruby
+engine = Transmogrifier::Engine.new
+move = Transmogrifier::Rules::Copy.new("", "key", "nested")
+
+engine.add_rule(:copy, "", "key", "nested")
+
+input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
+output_hash = transmogrifier.run(input_hash)
+
+# output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "key" => "value"}}
+```
+
 #### Deleting  a key
 ```ruby
 engine = Transmogrifier::Engine.new
@@ -28,6 +41,19 @@ input_hash = {"key" => "value", "extra_key" => "some_value"}
 output_hash = engine.run(input_hash)
 
 # output_hash => {"key" => "value"}
+```
+
+#### Modifying a value
+```ruby
+engine = Transmogrifier::Engine.new
+move = Transmogrifier::Rules::Modify.new("", "key", "nested")
+
+engine.add_rule(:modify, "key", "al", "og")
+
+input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
+output_hash = transmogrifier.run(input_hash)
+
+# output_hash => {"key" => "vogue", "nested" => {"nested_key" => "nested_value"}}
 ```
 
 #### Moving a key
@@ -109,4 +135,4 @@ the selector `nested.second_level.deep` will apply to `buried_value`. Rules can 
   ],
 }
 ```
-the hash with the name `this one!` can be operated on with `array.[name=this one!]`. Arrays can also wildcard match all children. For example to match both hashes in the array above, use the selector `array.[]`. 
+the hash with the name `this one!` can be operated on with `array.[name=this one!]` or `array.[name!=not me]`. Arrays can also wildcard match all children. For example to match both hashes in the array above, use the selector `array.[]`.

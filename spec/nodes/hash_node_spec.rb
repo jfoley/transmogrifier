@@ -26,7 +26,7 @@ module Transmogrifier
       end
 
       context "given multiple selector keys" do
-        let(:keys) { ["key", [["k", "v"]]] }
+        let(:keys) { ["key", [["=", "k", "v"]]] }
 
         context "when the first key is a key in the hash" do
           let(:hash) {{
@@ -65,6 +65,18 @@ module Transmogrifier
       end
     end
 
+    describe "#clone" do
+      it "returns a copy of value" do
+        value = "other_value"
+        hash = {"key" => "value", "extra_key" => value}
+        node = HashNode.new(hash)
+
+        expect(node.clone("extra_key")).to eql(value)
+        expect(node.clone("extra_key")).to_not be(value)
+        expect(node.raw).to eq("key" => "value", "extra_key" => "other_value")
+      end
+    end
+
     describe "#delete" do
       it "deletes the given key" do
         hash = {"key" => "value", "extra_key" => "other_value"}
@@ -88,6 +100,14 @@ module Transmogrifier
         node = HashNode.new(hash)
         node.append({ "extra_key" => "extra_value"})
         expect(node.raw).to eq({"key" => "value", "extra_key" => "extra_value"})
+      end
+    end
+
+    describe "#modify" do
+      it "raises a NotImplementedError" do
+        expect {
+          HashNode.new("hello").modify("value", "value2")
+        }.to raise_error(NotImplementedError)
       end
     end
   end
