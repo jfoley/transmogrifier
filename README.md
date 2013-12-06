@@ -135,4 +135,4 @@ the selector `nested.second_level.deep` will apply to `buried_value`. Rules can 
   ],
 }
 ```
-the hash with the name `this one!` can be operated on with `array.[name==this one!]` or `array.[name!=not me]`. Arrays can also wildcard match all children. For example to match both hashes in the array above, use the selector `array.[]`.
+the hash with the name `this one!` can be operated on with `array.[name=this one!]` or `array.[name!=not me]`. Arrays can also wildcard match all children. For example to match both hashes in the array above, use the selector `array.[]`.
