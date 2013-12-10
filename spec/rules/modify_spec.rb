@@ -19,7 +19,7 @@ describe Transmogrifier::Rules::Modify do
   context "when the selector finds a HashNode" do
     subject(:modify) { described_class.new("", "al", "og") }
 
-    it "appends to the hash" do
+    it "raises an error" do
       expect{modify.apply!(input_hash)}.to raise_error(NotImplementedError)
     end
   end
@@ -27,7 +27,7 @@ describe Transmogrifier::Rules::Modify do
   context "when the selector finds an ArrayNode" do
     subject(:modify) { described_class.new("array", "al", "og") }
 
-    it "appends to the array" do
+    it "raises an error" do
       expect{modify.apply!(input_hash)}.to raise_error(NotImplementedError)
     end
   end

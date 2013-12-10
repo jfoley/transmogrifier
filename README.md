@@ -7,7 +7,7 @@ Transmogrifier is a tool that allows you to decalaritively migrate a hash from o
 #### Appending a key
 ```ruby
 engine = Transmogrifier::Engine.new
-append = Transmogrifier::Rules::Append.new("", "new_key", "new_value")
+append = Transmogrifier::Rules::Append.new("", { "new_key" => "new_value" })
 
 engine.add_rule(append)
 
@@ -20,12 +20,12 @@ output_hash = engine.run(input_hash)
 #### Copying a key
 ```ruby
 engine = Transmogrifier::Engine.new
-move = Transmogrifier::Rules::Copy.new("", "key", "nested")
+copy = Transmogrifier::Rules::Copy.new("", "key", "nested")
 
-engine.add_rule(:copy, "", "key", "nested")
+engine.add_rule(copy)
 
 input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
-output_hash = transmogrifier.run(input_hash)
+output_hash = engine.run(input_hash)
 
 # output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
@@ -33,7 +33,7 @@ output_hash = transmogrifier.run(input_hash)
 #### Deleting  a key
 ```ruby
 engine = Transmogrifier::Engine.new
-delete = Transmogrifier::Rules::Delete("", "extra_key")
+delete = Transmogrifier::Rules::Delete.new("", "extra_key")
 
 engine.add_rule(delete)
 
@@ -46,14 +46,14 @@ output_hash = engine.run(input_hash)
 #### Modifying a value
 ```ruby
 engine = Transmogrifier::Engine.new
-move = Transmogrifier::Rules::Modify.new("", "key", "nested")
+move = Transmogrifier::Rules::Modify.new("key", "al", "og")
 
-engine.add_rule(:modify, "key", "al", "og")
+engine.add_rule(move)
 
-input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
-output_hash = transmogrifier.run(input_hash)
+input_hash = {"key" => "value"}
+output_hash = engine.run(input_hash)
 
-# output_hash => {"key" => "vogue", "nested" => {"nested_key" => "nested_value"}}
+# output_hash => {"key" => "vogue"}
 ```
 
 #### Moving a key
@@ -64,7 +64,7 @@ move = Transmogrifier::Rules::Move.new("", "key", "nested")
 engine.add_rule(:move, "", "key", "nested")
 
 input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
-output_hash = transmogrifier.run(input_hash)
+output_hash = engine.run(input_hash)
 
 # output_hash => {"nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
