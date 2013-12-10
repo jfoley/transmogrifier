@@ -66,14 +66,25 @@ module Transmogrifier
     end
 
     describe "#clone" do
-      it "returns a copy of value" do
-        value = "other_value"
-        hash = {"key" => "value", "extra_key" => value}
-        node = HashNode.new(hash)
+      context "when key exists" do
+        it "returns a copy of value" do
+          value = "other_value"
+          hash = {"key" => "value", "extra_key" => value}
+          node = HashNode.new(hash)
 
-        expect(node.clone("extra_key")).to eql(value)
-        expect(node.clone("extra_key")).to_not be(value)
-        expect(node.raw).to eq("key" => "value", "extra_key" => "other_value")
+          expect(node.clone("extra_key")).to eql(value)
+          expect(node.clone("extra_key")).to_not be(value)
+          expect(node.raw).to eq("key" => "value", "extra_key" => "other_value")
+        end
+      end
+
+      context "when key does not exist" do
+        it "returns nil" do
+          hash = {"key" => "value"}
+          node = HashNode.new(hash)
+
+          expect(node.clone("extra_key")).to be_nil
+        end
       end
     end
 

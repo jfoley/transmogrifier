@@ -96,4 +96,22 @@ describe Transmogrifier::Rules::Copy do
       })
     end
   end
+
+  context "when the selector does not find a node" do
+    context "when the parent node is a HashNode" do
+      subject(:copy) { described_class.new("", "missing_key", "nested") }
+
+      it "does not modify the input hash" do
+        expect(copy.apply!(input_hash)).to eq(input_hash)
+      end
+    end
+
+    context "when the parent node is an ArrayNode" do
+      subject(:copy) { described_class.new("", "array.[inside=missing_value]", "nested") }
+
+      it "does not modify the input hash" do
+        expect(copy.apply!(input_hash)).to eq(input_hash)
+      end
+    end
+  end
 end

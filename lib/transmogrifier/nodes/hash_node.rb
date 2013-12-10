@@ -22,8 +22,6 @@ module Transmogrifier
 
     def clone(key)
       matching_node = @hash[key]
-      raise "Multiple nodes match #{key}, clone criteria ambiguous" if matching_node.nil?
-
       Marshal.load(Marshal.dump(matching_node))
     end
 
