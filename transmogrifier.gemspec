@@ -1,38 +1,29 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
 
-Gem::Specification.new do |s|
-  s.name = "transmogrifier"
-  s.version = "0.0.3"
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'transmogrifier/version'
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["John Foley"]
-  s.date = "2013-11-06"
-  s.description = "A tool for manipulating schemas"
-  s.email = ["john@hisfoleyness.com"]
-  s.files = `git ls-files -- lib/*`.split("\n")
-  s.files += %w[README.md LICENSE.txt Gemfile]
-  s.homepage = "http://github.com/jfoley/transmogrifier"
-  s.licenses = ["MIT"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = "2.0.7"
-  s.summary = "A tool for manipulating schemas"
-  s.test_files = `git ls-files -- spec/*`.split("\n")
+Gem::Specification.new do |spec|
+  spec.name = "transmogrifier"
+  spec.version = Transmogrifier::VERSION
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 4
+  spec.authors = ["John Foley"]
+  spec.email = ["john@hisfoleyness.com"]
+  spec.date = "2013-11-06"
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<bundler>, ["~> 1.3"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, [">= 0"])
-    else
-      s.add_dependency(%q<bundler>, ["~> 1.3"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 0"])
-    end
-  else
-    s.add_dependency(%q<bundler>, ["~> 1.3"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 0"])
-  end
+  spec.description = "A tool for manipulating schemas"
+  spec.summary = "A tool for manipulating schemas"
+  spec.homepage = "http://github.com/jfoley/transmogrifier"
+  spec.licenses = ["MIT"]
+
+  spec.require_paths = ["lib"]
+
+  spec.files = `git ls-files -- lib/*`.split("\n")
+  spec.files += %w[README.md LICENSE.txt Gemfile]
+  spec.test_files = `git ls-files -- spec/*`.split("\n")
+
+  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
 end
