@@ -1,8 +1,8 @@
 module Transmogrifier
   module Rules
     class Append
-      def initialize(parent_selector, hash)
-        @parent_selector, @hash = parent_selector, hash
+      def initialize(parent_selector, new_hash)
+        @parent_selector, @hash = parent_selector, new_hash
       end
 
       def apply!(input_hash)
