@@ -1,4 +1,6 @@
 module Transmogrifier
+  class SelectorNotFoundError < RuntimeError; end
+
   class Selector
     FILTER_REGEX = /\[(.*)\]/
     OPERATORS = ["!=", "="]

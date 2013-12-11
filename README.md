@@ -4,7 +4,7 @@ Transmogrifier is a tool that allows you to decalaritively migrate a hash from o
 
 ## Usage
 ### Available Rules
-#### Appending a key
+#### Appending a node
 ```ruby
 engine = Transmogrifier::Engine.new
 append = Transmogrifier::Rules::Append.new("", { "new_key" => "new_value" })
@@ -17,7 +17,20 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
 
-#### Copying a key
+### Updating a node
+```ruby
+engine = Transmogrifier::Engine.new
+update = Transmogrifier::Rules::Update.new("nested.nested_key", "updated-value")
+
+engine.add_rule(update)
+
+input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
+output_hash = engine.run(input_hash)
+
+# output_hash => {"key" => "value", "nested" => {"nested_key" => "updated-value"}}
+```
+
+#### Copying a node
 ```ruby
 engine = Transmogrifier::Engine.new
 copy = Transmogrifier::Rules::Copy.new("", "key", "nested")
@@ -30,7 +43,7 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
 
-#### Deleting  a key
+#### Deleting  a node
 ```ruby
 engine = Transmogrifier::Engine.new
 delete = Transmogrifier::Rules::Delete.new("", "extra_key")
@@ -43,7 +56,7 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "value"}
 ```
 
-#### Modifying a value
+#### Modifying a node's value
 ```ruby
 engine = Transmogrifier::Engine.new
 move = Transmogrifier::Rules::Modify.new("key", "al", "og")
@@ -56,7 +69,7 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "vogue"}
 ```
 
-#### Moving a key
+#### Moving a node
 ```ruby
 engine = Transmogrifier::Engine.new
 move = Transmogrifier::Rules::Move.new("", "key", "nested")
