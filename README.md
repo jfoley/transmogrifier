@@ -44,6 +44,7 @@ output_hash = engine.run(input_hash)
 
 # output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "key" => "value"}}
 ```
+If the node to be copied does not exist, then this operation will no-op leaving the hash unchanged.
 
 #### Deleting  a node
 ```ruby
