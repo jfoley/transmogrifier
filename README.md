@@ -35,15 +35,16 @@ output_hash = engine.run(input_hash)
 #### Copying a node
 ```ruby
 engine = Transmogrifier::Engine.new
-copy = Transmogrifier::Rules::Copy.new("", "key", "nested")
+copy = Transmogrifier::Rules::Copy.new("", "key", "nested.nested_key2")
 
 engine.add_rule(copy)
 
 input_hash = {"key" => "value", "nested" => {"nested_key" => "nested_value"}}
 output_hash = engine.run(input_hash)
 
-# output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "key" => "value"}}
+# output_hash => {"key" => "value", "nested" => {"nested_key" => "nested_value", "nested_key2" => "value"}}
 ```
+If the node to be copied does not exist, then this operation will no-op leaving the hash unchanged.
 
 #### Deleting  a node
 ```ruby

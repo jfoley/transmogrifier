@@ -180,6 +180,24 @@ describe Transmogrifier::Engine do
             })
           end
         end
+
+        context "when the selector does not find a node" do
+          context "when the parent node is a HashNode" do
+            subject(:rules) { [ {"type" => "copy", "selector" => "", "from" => "missing_key", "to" => "nested"} ] }
+
+            it "does not modify the input hash" do
+              expect(engine.run(input_hash)).to eq(input_hash)
+            end
+          end
+
+          context "when the parent node is an ArrayNode" do
+            subject(:rules) { [ {"type" => "copy", "selector" => "", "from" => "array.[inside=missing_value]", "to" => "nested"} ] }
+
+            it "does not modify the input hash" do
+              expect(engine.run(input_hash)).to eq(input_hash)
+            end
+          end
+        end
       end
 
       describe "deleting keys" do

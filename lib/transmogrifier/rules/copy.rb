@@ -14,6 +14,7 @@ module Transmogrifier
         parents.each do |parent|
           to_parent = parent.find_all(to_keys).first
           object = parent.find_all(from_keys).first.clone(from_key)
+          next if object.nil?
 
           if to_child = to_parent.find_all([to_key]).first
             to_child.append(object)
