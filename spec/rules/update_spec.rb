@@ -69,7 +69,7 @@ describe Transmogrifier::Rules::Update do
 
   context "when the selector does not find a node" do
     context "when the selector finds a hash as the parent" do
-      subject(:update) { described_class.new("non-existant-key", "new-value") }
+      subject(:update) { described_class.new("non-existent-key", "new-value") }
 
       it "raises a SelectorNotFoundError" do
         expect {
@@ -79,7 +79,7 @@ describe Transmogrifier::Rules::Update do
     end
 
     context "when the selector finds an array as the parent" do
-      subject(:update) { described_class.new("array.[name=non-existant-key]", "new-value") }
+      subject(:update) { described_class.new("array.[name=non-existent-key]", "new-value") }
 
       it "raises a SelectorNotFoundError" do
         expect {
