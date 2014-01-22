@@ -19,7 +19,7 @@ output_hash = engine.run(input_hash)
 # output_hash => {"key" => "value", "new_key" => "new_value"}
 ```
 
-### Updating a node
+#### Updating a node
 ```ruby
 engine = Transmogrifier::Engine.new
 update = Transmogrifier::Rules::Update.new("nested.nested_key", "updated-value")
