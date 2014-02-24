@@ -14,7 +14,7 @@ module Transmogrifier
       if first_key.nil?
         [self]
       elsif child = @hash[first_key]
-        Node.for(child).find_all(remaining_keys)
+        Node.for(child, self).find_all(remaining_keys)
       else
         []
       end

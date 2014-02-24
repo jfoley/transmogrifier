@@ -2,8 +2,11 @@ require_relative "node"
 
 module Transmogrifier
   class ValueNode < Node
-    def initialize(value)
+    attr_reader :parent_node
+
+    def initialize(value, parent_node=nil)
       @value = value
+      @parent_node = parent_node
     end
 
     def find_all(keys)
