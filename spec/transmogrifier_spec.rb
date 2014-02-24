@@ -1,13 +1,5 @@
 require "transmogrifier"
 
-class SomeMigrator
-  def apply!(hash)
-    hash[:fancy_key] = 4
-    hash
-  end
-end
-
-
 describe Transmogrifier::Engine do
   subject(:engine) { described_class.from_rules_array(rules) }
 
@@ -15,23 +7,31 @@ describe Transmogrifier::Engine do
   describe "#run" do
 
     describe "with migrators" do
-
       it "raises for unknown migrator" do
         expect {
           engine = Transmogrifier::Engine.from_rules_array([{
             "type" => "code",
             "migrator" => "SomeOtherMigrator"
-          }], [SomeMigrator])
+          }], [])
         }.to raise_error
       end
 
       it "runs custom migrator" do
+        TEST_MIGRATOR = Class.new do
+          def apply!(selector: nil, original_hash: nil)
+            original_hash[selector] = "new value!"
+            original_hash
+          end
+        end
+
         engine = Transmogrifier::Engine.from_rules_array([{
           "type" => "code",
-          "migrator" => "SomeMigrator"
-        }], [SomeMigrator])
-        result = engine.run({:fancy_key => 1, :shabby_key => 8})
-        result.should == {:fancy_key => 4, :shabby_key => 8}
+          "migrator" => "TEST_MIGRATOR",
+          "selector" => "key"
+        }], [TEST_MIGRATOR])
+
+        result = engine.run({"key" => "old value"})
+        result.should == {"key" => "new value!"}
       end
     end
 
