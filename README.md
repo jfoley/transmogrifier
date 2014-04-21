@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/jfoley/transmogrifier.png)](https://travis-ci.org/jfoley/transmogrifier)
 
-Transmogrifier is a tool that allows you to decalaritively migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
+![transmogrify](https://lh3.ggpht.com/-7i5m5GysnnY/TcC6btifnPI/AAAAAAAAAKg/_faHnUFUSeM/s1600/Picture3.png)
+
+Transmogrifier is a tool that allows you to declaritively migrate a hash from one schema to another. It works by specifying a set of rules to apply to the hash and then running them in order.
 
 ## Usage
 ### Available Rules
