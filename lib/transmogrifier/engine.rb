@@ -10,13 +10,13 @@ module Transmogrifier
           type = rule["type"].capitalize
           selector = rule["selector"]
           options = [
+            retrieve_migrator(rule["migrator"], migrator_map),
             rule["object"],
             rule["from"],
             rule["to"],
             rule["name"],
             rule["pattern"],
             rule["replacement"],
-            retrieve_migrator(rule["migrator"], migrator_map)
           ].compact
           Transmogrifier::Rules.const_get(type).new(selector, *options)
         end

@@ -11,15 +11,16 @@ describe Transmogrifier::Engine do
         expect {
           engine = Transmogrifier::Engine.from_rules_array([{
             "type" => "code",
-            "migrator" => "SomeOtherMigrator"
+            "migrator" => "SomeOtherMigrator",
+            "name" => "thing",
           }], [])
         }.to raise_error
       end
 
       it "runs custom migrator" do
         TEST_MIGRATOR = Class.new do
-          def apply!(selector: nil, original_hash: nil)
-            original_hash[selector] = "new value!"
+          def apply!(selector: nil, original_hash: nil, extra_args: [])
+            original_hash[selector] = "new value! + #{extra_args.first}"
             original_hash
           end
         end
@@ -27,11 +28,12 @@ describe Transmogrifier::Engine do
         engine = Transmogrifier::Engine.from_rules_array([{
           "type" => "code",
           "migrator" => "TEST_MIGRATOR",
-          "selector" => "key"
+          "selector" => "key",
+          "name" => "thing",
         }], [TEST_MIGRATOR])
 
         result = engine.run({"key" => "old value"})
-        result.should == {"key" => "new value!"}
+        result.should == {"key" => "new value! + thing"}
       end
     end
 
