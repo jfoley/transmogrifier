@@ -31,7 +31,7 @@ describe Transmogrifier::Engine do
         }], [TEST_MIGRATOR])
 
         result = engine.run({"key" => "old value"})
-        result.should == {"key" => "new value!"}
+        expect(result).to eq({"key" => "new value!"})
       end
     end
 
